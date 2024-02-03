@@ -55,6 +55,10 @@ Then in your
   - With something like a `-verbose` flag (w/ an alias of `-v`!), include full values of each stack
     - Probably table format
 - [ ] Add self-update
+- [ ] Add configuration to indicate an environment is production
+  - Could potentially come into play w/ shell prompt updating
+- [ ] Add support for stack aliases
+  - Let daily usage use shorter names where shell prompt updating uses slightly more verbose naming
 - [ ] Add `add` command
 - [ ] Add `edit` command
   - I'd want to make sure that a user could modify a single attribute of a stack.
