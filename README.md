@@ -5,6 +5,16 @@ part of my work day just a little bit easier.
 
 ## Usage
 
+### Shell Activation
+
+For this to really work, you will need to have this in your `.bashrc` / `.zshrc`:
+
+```shell
+eval "$(hctx activate)"
+```
+
+The above assumes that at whatever point you add this, `hctx` is available in your path.
+
 ### Use a Stack
 
 ```shell
