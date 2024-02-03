@@ -62,7 +62,7 @@ func (s *Stack) Use(shell string) string {
 	var exportCommand string
 
 	// Include Stack Name as an environment variable
-	exportCommand += strings.Join([]string{fmt.Sprintf("export HC_STACK_NAME=%s\n", s.Name)}, exportCommand)
+	exportCommand += strings.Join([]string{fmt.Sprintf("export HCTX_STACK_NAME=%s\n", s.Name)}, exportCommand)
 
 	if s.Nomad != nil {
 		exportCommand += strings.Join(s.Nomad.Use(shell), exportCommand)
@@ -85,7 +85,7 @@ func (s *Stack) Unset(shell string) string {
 	var unsetCommand string
 
 	// Remove Stack environment variables
-	unsetCommand += strings.Join([]string{"unset HC_STACK_NAME\n"}, unsetCommand)
+	unsetCommand += strings.Join([]string{"unset HCTX_STACK_NAME\n"}, unsetCommand)
 
 	if s.Nomad != nil {
 		unsetCommand += strings.Join(s.Nomad.Unset(shell), unsetCommand)

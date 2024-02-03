@@ -10,7 +10,7 @@ import (
 // Unset Remove everything hctx configured in the environment variables
 func Unset(ctx *cli.Context) error {
 
-	currStack := os.Getenv("HC_STACK_NAME")
+	currStack := os.Getenv("HCTX_STACK_NAME")
 
 	if currStack == "" {
 		fmt.Println("No stack selected, nothing to unset.")
