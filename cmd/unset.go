@@ -12,8 +12,6 @@ func Unset(ctx *cli.Context) error {
 
 	currStack := os.Getenv("HC_STACK_NAME")
 
-	fmt.Printf("Current Stack: %s", currStack)
-
 	if currStack == "" {
 		fmt.Println("No stack selected, nothing to unset.")
 		return nil

@@ -1,2 +1,8 @@
+.vscode
+.idea
 
 dist/
+
+.env
+
+hctx
