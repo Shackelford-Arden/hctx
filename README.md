@@ -11,13 +11,20 @@ part of my work day just a little bit easier.
 hctx use prod
 ```
 
+Doing this will only set the environment variables for the config items in the stack. So, for example, if you
+only have a Nomad entry in the given stack's config, only the Nomad environment variables will be defined.
+
+For an example config, see [config-example.hcl](./config-example.hcl)
+
 ### Stop using a Stack
 
-This command assumes that you 
+This will remove the environment variables for the current stack.
 
 ```shell
 hctx unset
 ```
+
+Note: There is currently a bug where if you run the `unset` command more than once in a row, it errors out.
 
 
 ### Shell Prompts
