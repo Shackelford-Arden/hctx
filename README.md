@@ -50,10 +50,11 @@ Then in your
 
 ## TODO Items
 
-- [ ] Add `list` command
+- [x] Add `list` command
   - Default should be a simple list of stack names.
   - With something like a `-verbose` flag (w/ an alias of `-v`!), include full values of each stack
     - Probably table format
+- [ ] Add self-update
 - [ ] Add `add` command
 - [ ] Add `edit` command
   - I'd want to make sure that a user could modify a single attribute of a stack.
