@@ -1,0 +1,3 @@
+[{*.yml,*.yaml}]
+tab_width = 2
+ij_yaml_indent_size = 2

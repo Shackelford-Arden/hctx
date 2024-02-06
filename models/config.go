@@ -14,6 +14,7 @@ type Config struct {
 
 type Stack struct {
 	Name   string        `hcl:",label"`
+	Alias  string        `hcl:"alias,optional"`
 	Nomad  *NomadConfig  `hcl:"nomad,block"`
 	Consul *ConsulConfig `hcl:"consul,block"`
 	Vault  *VaultConfig  `hcl:"vault,block"`
@@ -33,7 +34,7 @@ func NewConfig() (*Config, error) {
 	_, statErr := os.Stat(configPath)
 	if statErr != nil {
 		// Create the file
-		fmt.Printf("Didn't find a config file at %s, so I created one!", configPath)
+		fmt.Printf("Didn't find a config file at %s, so I created one!\n", configPath)
 		newCfgFile, createErr := os.Create(configPath)
 		if createErr != nil {
 			return nil, createErr
@@ -62,7 +63,12 @@ func (s *Stack) Use(shell string) string {
 	var exportCommand string
 
 	// Include Stack Name as an environment variable
-	exportCommand += strings.Join([]string{fmt.Sprintf("export HCTX_STACK_NAME=%s\n", s.Name)}, exportCommand)
+	// Allow the Alias name to show in the environment variable
+	stackName := s.Name
+	if s.Alias != "" {
+		stackName = s.Alias
+	}
+	exportCommand += strings.Join([]string{fmt.Sprintf("export HCTX_STACK_NAME='%s' \n", stackName)}, exportCommand)
 
 	if s.Nomad != nil {
 		exportCommand += strings.Join(s.Nomad.Use(shell), exportCommand)

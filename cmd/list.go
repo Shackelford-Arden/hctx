@@ -26,7 +26,7 @@ func List(ctx *cli.Context) error {
 	fmt.Println("Stacks:")
 	for _, stack := range cfg.Stacks {
 		var indicator string
-		if stack.Name == currStack {
+		if stack.Name == currStack || stack.Alias == currStack {
 			indicator = "*"
 		}
 		fmt.Printf("  %s %s\n", stack.Name, indicator)
