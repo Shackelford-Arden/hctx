@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/Shackelford-Arden/hctx/models"
 	"github.com/urfave/cli/v2"
 )
@@ -19,9 +21,15 @@ func List(ctx *cli.Context) error {
 		return nil
 	}
 
+	currStack := os.Getenv("HCTX_STACK_NAME")
+
 	fmt.Println("Stacks:")
 	for _, stack := range cfg.Stacks {
-		fmt.Printf("  %s\n", stack.Name)
+		var indicator string
+		if stack.Name == currStack {
+			indicator = "*"
+		}
+		fmt.Printf("  %s %s\n", stack.Name, indicator)
 
 		if !ctx.Bool("verbose") {
 			continue
