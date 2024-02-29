@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/Shackelford-Arden/hctx/models"
+	"github.com/Shackelford-Arden/hctx/types"
 	"github.com/urfave/cli/v2"
 	"os"
 )
@@ -10,15 +11,14 @@ import (
 // Unset Remove everything hctx configured in the environment variables
 func Unset(ctx *cli.Context) error {
 
-	currStack := os.Getenv("HCTX_STACK_NAME")
+	currStack := os.Getenv(types.StackNameEnv)
 
 	if currStack == "" {
-		fmt.Println("No stack selected, nothing to unset.")
 		return nil
 	}
 
 	// Parse config
-	cfg, cfgErr := models.NewConfig()
+	cfg, cfgErr := models.NewConfig("")
 	if cfgErr != nil {
 		return cfgErr
 	}

@@ -101,8 +101,6 @@ _Note: hctx will only unset the environment variables that are configured in the
 hctx unset
 ```
 
-Note: There is currently a bug where if you run the `unset` command more than once in a row, it errors out.
-
 ### Shell Prompts
 
 This section contains information about how one _might_ configure the

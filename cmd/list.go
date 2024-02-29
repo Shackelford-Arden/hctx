@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/Shackelford-Arden/hctx/types"
 	"os"
 
 	"github.com/Shackelford-Arden/hctx/models"
@@ -11,7 +12,7 @@ import (
 func List(ctx *cli.Context) error {
 
 	// Parse config
-	cfg, cfgErr := models.NewConfig()
+	cfg, cfgErr := models.NewConfig("")
 	if cfgErr != nil {
 		return cfgErr
 	}
@@ -21,12 +22,12 @@ func List(ctx *cli.Context) error {
 		return nil
 	}
 
-	currStack := os.Getenv("HCTX_STACK_NAME")
+	currStack := os.Getenv(types.StackNameEnv)
 
 	fmt.Println("Stacks:")
 	for _, stack := range cfg.Stacks {
 		var indicator string
-		if stack.Name == currStack || stack.Alias == currStack {
+		if currStack != "" && (stack.Name == currStack || stack.Alias == currStack) {
 			indicator = "*"
 		}
 		fmt.Printf("  %s %s\n", stack.Name, indicator)

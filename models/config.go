@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/Shackelford-Arden/hctx/types"
 	"github.com/hashicorp/hcl/v2/hclsimple"
 	"os"
 	"strings"
@@ -20,15 +21,20 @@ type Stack struct {
 	Vault  *VaultConfig  `hcl:"vault,block"`
 }
 
-func NewConfig() (*Config, error) {
-	// Get user homedir
-	userHome, homeErr := os.UserHomeDir()
-	if homeErr != nil {
-		fmt.Printf("failed to get user homedir: %s", homeErr)
-		os.Exit(10)
-	}
+func NewConfig(cp string) (*Config, error) {
 
-	configPath := fmt.Sprintf("%s/.config/%s", userHome, ".hctx.hcl")
+	var configPath = cp
+
+	if cp == "" {
+		// Get user homedir
+		userHome, homeErr := os.UserHomeDir()
+		if homeErr != nil {
+			fmt.Printf("failed to get user homedir: %s", homeErr)
+			os.Exit(10)
+		}
+
+		configPath = fmt.Sprintf("%s/.config/%s", userHome, ".hctx.hcl")
+	}
 
 	// Check if there is a config file
 	_, statErr := os.Stat(configPath)
@@ -60,27 +66,27 @@ func NewConfig() (*Config, error) {
 
 // Use provides commands to set appropriate environment variables
 func (s *Stack) Use(shell string) string {
-	var exportCommand string
-
 	// Include Stack Name as an environment variable
 	// Allow the Alias name to show in the environment variable
 	stackName := s.Name
 	if s.Alias != "" {
 		stackName = s.Alias
 	}
-	exportCommand += strings.Join([]string{fmt.Sprintf("export HCTX_STACK_NAME='%s' \n", stackName)}, exportCommand)
+	var exportCommands = []string{fmt.Sprintf("\nexport %s='%s'", types.StackNameEnv, stackName)}
 
 	if s.Nomad != nil {
-		exportCommand += strings.Join(s.Nomad.Use(shell), exportCommand)
+		exportCommands = append(exportCommands, s.Nomad.Use(shell)...)
 	}
 
 	if s.Consul != nil {
-		exportCommand += strings.Join(s.Consul.Use(shell), exportCommand)
+		exportCommands = append(exportCommands, s.Consul.Use(shell)...)
 	}
 
 	if s.Vault != nil {
-		exportCommand += strings.Join(s.Vault.Use(shell), exportCommand)
+		exportCommands = append(exportCommands, s.Vault.Use(shell)...)
 	}
+
+	var exportCommand = strings.Join(exportCommands, "\n")
 
 	return exportCommand
 }
@@ -88,22 +94,22 @@ func (s *Stack) Use(shell string) string {
 // Unset Provides shell commands to unset environment variables
 func (s *Stack) Unset(shell string) string {
 
-	var unsetCommand string
-
 	// Remove Stack environment variables
-	unsetCommand += strings.Join([]string{"unset HCTX_STACK_NAME\n"}, unsetCommand)
+	var unsetCommands = []string{fmt.Sprintf("\nunset %s", types.StackNameEnv)}
 
 	if s.Nomad != nil {
-		unsetCommand += strings.Join(s.Nomad.Unset(shell), unsetCommand)
+		unsetCommands = append(unsetCommands, s.Nomad.Unset(shell)...)
 	}
 
 	if s.Consul != nil {
-		unsetCommand += strings.Join(s.Consul.Unset(shell), unsetCommand)
+		unsetCommands = append(unsetCommands, s.Consul.Unset(shell)...)
 	}
 
 	if s.Vault != nil {
-		unsetCommand += strings.Join(s.Vault.Unset(shell), unsetCommand)
+		unsetCommands = append(unsetCommands, s.Vault.Unset(shell)...)
 	}
+
+	var unsetCommand = strings.Join(unsetCommands, "\n")
 
 	return unsetCommand
 }

@@ -18,7 +18,7 @@ func Use(ctx *cli.Context) error {
 	var selectedStack *models.Stack
 
 	// Parse config
-	cfg, cfgErr := models.NewConfig()
+	cfg, cfgErr := models.NewConfig("")
 	if cfgErr != nil {
 		return cfgErr
 	}

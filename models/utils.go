@@ -15,21 +15,21 @@ func genUseCommands(shell string, varName string, varValue string) string {
 		envCmd = fmt.Sprintf("export %s=%s", varName, varValue)
 	}
 
-	return fmt.Sprintf("%s\n", envCmd)
+	return fmt.Sprintf("%s", envCmd)
 
 }
 
 func genUnsetCommands(shell string, varName string) string {
-	var unuseCmd string
+	var unsetCmd string
 
 	switch shell {
-	case "base", "zsh":
-		unuseCmd = fmt.Sprintf("unset %s", varName)
+	case "bash", "zsh":
+		unsetCmd = fmt.Sprintf("unset %s", varName)
 
 	default:
-		unuseCmd = fmt.Sprintf("unset %s", varName)
+		unsetCmd = fmt.Sprintf("unset %s", varName)
 	}
 
-	return unuseCmd
+	return unsetCmd
 
 }
