@@ -1,0 +1,5 @@
+kind: Fixed
+body: unset command is now aware of both stack names and aliases
+time: 2024-04-24T08:09:40.430361307-05:00
+custom:
+  Author: Shackelford-Arden

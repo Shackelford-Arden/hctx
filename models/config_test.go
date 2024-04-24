@@ -96,3 +96,41 @@ unset %s`,
 }
 
 // endregion
+
+func TestStackExistsUsingStackName(t *testing.T) {
+
+	// Create test stack
+	stack := Stack{
+		Name:  "test-stack",
+		Alias: "Test Stack",
+	}
+
+	testConfig := Config{
+		Stacks: []Stack{stack},
+	}
+
+	existingStack := testConfig.StackExists("test-stack")
+
+	if existingStack == nil {
+		t.Fatalf("Expected stack to exist, but it does not.")
+	}
+}
+
+func TestStackExistsUsingAlias(t *testing.T) {
+
+	// Create test stack
+	stack := Stack{
+		Name:  "test-stack",
+		Alias: "Test Stack",
+	}
+
+	testConfig := Config{
+		Stacks: []Stack{stack},
+	}
+
+	existingStack := testConfig.StackExists("Test Stack")
+
+	if existingStack == nil {
+		t.Fatalf("Expected stack to exist, but it does not.")
+	}
+}

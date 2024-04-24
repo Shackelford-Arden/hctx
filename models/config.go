@@ -121,6 +121,7 @@ func (c *Config) Map() map[string]Stack {
 
 	for _, stack := range c.Stacks {
 		stacks[stack.Name] = stack
+		stacks[stack.Alias] = stack
 	}
 
 	return stacks
