@@ -15,7 +15,7 @@ func genUseCommands(shell string, varName string, varValue string) string {
 		envCmd = fmt.Sprintf("export %s=%s", varName, varValue)
 	}
 
-	return fmt.Sprintf("%s", envCmd)
+	return envCmd
 
 }
 
