@@ -33,7 +33,7 @@ source ~/.zshrc
 
 ### Define Your Configuration
 
-`hctx` assumes the config file will be in `~/.config/.hctx.hcl`. If it doesn't exist, it will create an empty
+`hctx` assumes the config file will be in `~/.config/hctx/config.hcl`. If it doesn't exist, it will create an empty
 one for you when you first run it.
 
 Here is an example configuration file:
@@ -101,6 +101,32 @@ _Note: hctx will only unset the environment variables that are configured in the
 hctx unset
 ```
 
+### Caching Tokens
+
+_Only applies to Nomad and Consul. Vault has built-in caching._
+
+By default, `hctx` does _not_ attempt to cache any credentials/tokens for Nomad or Consul.
+
+To enable it, simply set the global setting in your config:
+
+```hcl
+cache_auth = true
+```
+
+With this enabled, `hctx` will store credentials when switching between stacks.
+
+This can be helpful when/if you need to quickly switch between two or more stacks, but
+don't want to bother with authenticating each time you switch.
+
+_Note: Using `unset` will not cache anything, as it assumes you are no longer using
+that stack._
+
+Preferably, Nomad and Consul CLIs would do the caching for you. If
+either implement this in the future, `hctx` will be updated to prefer
+those methods over itself.
+
+You can find cache file in `~/.config/hctx/cache.json`.
+
 ### Shell Prompts
 
 This section contains information about how one _might_ configure the
@@ -134,13 +160,16 @@ format = 'hctx [$env_value]($style)'
   - With something like a `-verbose` flag (w/ an alias of `-v`!), include full values of each stack
     - Probably table format
 - [ ] Add self-update
-- [ ] Add configuration to indicate an environment is production
+- [x] Add configuration to indicate an environment is production
+  - This is "available" by letting users use aliases. Users can update their prompts accordingly.
   - Could potentially come into play w/ shell prompt updating
 - [x] Add support for stack aliases
   - Let daily usage use shorter names where shell prompt updating uses slightly more verbose naming
 - [ ] Add `add` command
+  - **Due to the way HCL itself works, this is not an option while using HCL as the config file.**
 - [ ] Add `edit` command
   - I'd want to make sure that a user could modify a single attribute of a stack.
+  - **Due to the way HCL itself works, this is not an option while using HCL as the config file.**
 
 ## Maybes
 

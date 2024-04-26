@@ -1,5 +1,7 @@
 package models
 
+import "os"
+
 type NomadConfig struct {
 	Address   string `hcl:"address,optional"`
 	Namespace string `hcl:"namespace,optional"`
@@ -7,9 +9,10 @@ type NomadConfig struct {
 
 var NomadAddr = "NOMAD_ADDR"
 var NomadNamespace = "NOMAD_NAMESPACE"
+var NomadToken = "NOMAD_TOKEN"
 
 // Use provides commands to set appropriate Nomad environment variables.
-func (n *NomadConfig) Use(shell string) []string {
+func (n *NomadConfig) Use(shell string, token string) []string {
 	var envCommands []string
 
 	if n.Address != "" {
@@ -18,6 +21,10 @@ func (n *NomadConfig) Use(shell string) []string {
 
 	if n.Namespace != "" {
 		envCommands = append(envCommands, genUseCommands(shell, NomadNamespace, n.Namespace))
+	}
+
+	if token != "" {
+		envCommands = append(envCommands, genUseCommands(shell, NomadToken, token))
 	}
 
 	return envCommands
@@ -34,6 +41,10 @@ func (n *NomadConfig) Unset(shell string) []string {
 
 	if n.Namespace != "" {
 		unsetCommands = append(unsetCommands, genUnsetCommands(shell, NomadNamespace))
+	}
+
+	if os.Getenv(NomadToken) != "" {
+		unsetCommands = append(unsetCommands, genUnsetCommands(shell, NomadToken))
 	}
 
 	return unsetCommands

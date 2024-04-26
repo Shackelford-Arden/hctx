@@ -5,19 +5,12 @@ import (
 	"github.com/Shackelford-Arden/hctx/types"
 	"os"
 
-	"github.com/Shackelford-Arden/hctx/models"
 	"github.com/urfave/cli/v2"
 )
 
 func List(ctx *cli.Context) error {
 
-	// Parse config
-	cfg, cfgErr := models.NewConfig("")
-	if cfgErr != nil {
-		return cfgErr
-	}
-
-	if len(cfg.Stacks) == 0 {
+	if len(AppConfig.Stacks) == 0 {
 		fmt.Fprintf(ctx.App.Writer, "No stacks!\n")
 		return nil
 	}
@@ -25,7 +18,7 @@ func List(ctx *cli.Context) error {
 	currStack := os.Getenv(types.StackNameEnv)
 
 	fmt.Println("Stacks:")
-	for _, stack := range cfg.Stacks {
+	for _, stack := range AppConfig.Stacks {
 		var indicator string
 		if currStack != "" && (stack.Name == currStack || stack.Alias == currStack) {
 			indicator = "*"

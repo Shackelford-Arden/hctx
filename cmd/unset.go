@@ -2,33 +2,27 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Shackelford-Arden/hctx/models"
-	"github.com/Shackelford-Arden/hctx/types"
+	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/urfave/cli/v2"
-	"os"
 )
 
 // Unset Remove everything hctx configured in the environment variables
 func Unset(ctx *cli.Context) error {
 
-	currStack := os.Getenv(types.StackNameEnv)
+	currentStack := AppConfig.GetCurrentStack()
 
-	if currStack == "" {
+	if currentStack == nil {
 		return nil
 	}
 
-	// Parse config
-	cfg, cfgErr := models.NewConfig("")
-	if cfgErr != nil {
-		return cfgErr
+	// Get current stacks tokens, if any and cache them
+	toCache := cache.GetCacheableValues()
+	updateErr := AppCache.Update(currentStack.Name, toCache)
+	if updateErr != nil {
+		return fmt.Errorf("could not update cache for stack %s: %v", currentStack.Name, updateErr)
 	}
 
-	stack := cfg.StackExists(currStack)
-	if stack == nil {
-		return fmt.Errorf("stack %s doesn't exist, no action taken", currStack)
-	}
-
-	fmt.Println(stack.Unset(cfg.Shell))
+	fmt.Println(currentStack.Unset(AppConfig.Shell))
 
 	return nil
 

@@ -27,7 +27,7 @@ hctx () {
   fi
   shift
   case "$command" in
-  (use|unset) if [[ ! " $@ " =~ " --help " ]] && [[ ! " $@ " =~ " -h " ]]
+  (use|u|unset|un) if [[ ! " $@ " =~ " --help " ]] && [[ ! " $@ " =~ " -h " ]]
     then
       eval "$(command $HCTX_PATH "$command" "$@")"
       return $?

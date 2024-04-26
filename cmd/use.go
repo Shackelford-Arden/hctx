@@ -2,39 +2,34 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Shackelford-Arden/hctx/models"
+	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/urfave/cli/v2"
-	"strings"
 )
 
 func Use(ctx *cli.Context) error {
 
-	// Bail if more than one stack is provided.
-	if ctx.Args().Len() > 1 {
-		return fmt.Errorf("only 1 stack can be used at a time. You provided %d: %s", ctx.Args().Len(), strings.Join(ctx.Args().Slice(), ","))
+	stackName := ctx.Args().First()
+
+	selectedStack := AppConfig.GetStack(stackName)
+
+	if selectedStack == nil {
+		return fmt.Errorf("no stack named %s in config", stackName)
 	}
 
-	stackName := ctx.Args().Get(0)
-	var selectedStack *models.Stack
-
-	// Parse config
-	cfg, cfgErr := models.NewConfig("")
-	if cfgErr != nil {
-		return cfgErr
-	}
-
-	for _, stack := range cfg.Stacks {
-		if stack.Name == stackName {
-			selectedStack = &stack
-			break
+	currentStack := AppConfig.GetCurrentStack()
+	// Get current stacks tokens, if any and cache them
+	if currentStack != nil {
+		toCache := cache.GetCacheableValues()
+		updateErr := AppCache.Update(currentStack.Name, toCache)
+		if updateErr != nil {
+			return fmt.Errorf("could not update cache for stack %s: %v", currentStack.Name, updateErr)
 		}
 	}
 
-	if selectedStack == nil {
-		return fmt.Errorf("no stack named %s", stackName)
-	}
+	// rehydrate env w/ new stack cache, if present
+	newStackCache := AppCache.Get(selectedStack.Name)
 
-	fmt.Print(selectedStack.Use(cfg.Shell))
+	fmt.Print(selectedStack.Use(AppConfig.Shell, newStackCache))
 
 	return nil
 }
