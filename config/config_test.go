@@ -1,7 +1,8 @@
-package models
+package config
 
 import (
 	"fmt"
+	"github.com/Shackelford-Arden/hctx/models"
 	"github.com/Shackelford-Arden/hctx/types"
 	"testing"
 )
@@ -16,13 +17,13 @@ func TestNewConfigUseFullNomad(t *testing.T) {
 	}
 
 	stackName := "just_nomad"
-	useOut := cfg.StackExists(stackName).Use("bash")
+	useOut := cfg.GetStack(stackName).Use("bash", nil)
 
 	expectedOutput := fmt.Sprintf(`
 export %s='%s'
 export %s=http://localhost:4646
 export %s=default`,
-		types.StackNameEnv, stackName, NomadAddr, NomadNamespace)
+		types.StackNameEnv, stackName, models.NomadAddr, models.NomadNamespace)
 
 	if useOut != expectedOutput {
 		t.Fatalf("\nExpected: %s\nActual: %s", expectedOutput, useOut)
@@ -37,13 +38,13 @@ func TestNewConfigUseFullConsul(t *testing.T) {
 		t.Fatalf("failed to read config: %s", err)
 	}
 	stackName := "just_consul"
-	useOut := cfg.StackExists(stackName).Use("bash")
+	useOut := cfg.GetStack(stackName).Use("bash", nil)
 
 	expectedOutput := fmt.Sprintf(`
 export %s='%s'
 export %s=http://localhost:8500
 export %s=default`,
-		types.StackNameEnv, stackName, ConsulAddr, ConsulNamespace)
+		types.StackNameEnv, stackName, models.ConsulAddr, models.ConsulNamespace)
 
 	if useOut != expectedOutput {
 		t.Fatalf("\nExpected: %s\nActual: %s", expectedOutput, useOut)
@@ -59,13 +60,13 @@ func TestNewConfigUseFullVault(t *testing.T) {
 	}
 
 	stackName := "just_vault"
-	useOut := cfg.StackExists(stackName).Use("bash")
+	useOut := cfg.GetStack(stackName).Use("bash", nil)
 
 	expectedOutput := fmt.Sprintf(`
 export %s='%s'
 export %s=http://localhost:8200
 export %s=default`,
-		types.StackNameEnv, stackName, VaultAddr, VaultNamespace)
+		types.StackNameEnv, stackName, models.VaultAddr, models.VaultNamespace)
 
 	if useOut != expectedOutput {
 		t.Fatalf("\nExpected: %s\nActual: %s", expectedOutput, useOut)
@@ -81,13 +82,13 @@ func TestNewConfigUnsetNomad(t *testing.T) {
 	}
 
 	stackName := "just_nomad"
-	unsetOut := cfg.StackExists(stackName).Unset("bash")
+	unsetOut := cfg.GetStack(stackName).Unset("bash")
 
 	expectedOutput := fmt.Sprintf(`
 unset %s
 unset %s
 unset %s`,
-		types.StackNameEnv, NomadAddr, NomadNamespace)
+		types.StackNameEnv, models.NomadAddr, models.NomadNamespace)
 
 	if unsetOut != expectedOutput {
 		t.Fatalf("\nExpected: %s\nActual: %s", expectedOutput, unsetOut)
@@ -109,7 +110,7 @@ func TestStackExistsUsingStackName(t *testing.T) {
 		Stacks: []Stack{stack},
 	}
 
-	existingStack := testConfig.StackExists("test-stack")
+	existingStack := testConfig.GetStack("test-stack")
 
 	if existingStack == nil {
 		t.Fatalf("Expected stack to exist, but it does not.")
@@ -128,7 +129,7 @@ func TestStackExistsUsingAlias(t *testing.T) {
 		Stacks: []Stack{stack},
 	}
 
-	existingStack := testConfig.StackExists("Test Stack")
+	existingStack := testConfig.GetStack("Test Stack")
 
 	if existingStack == nil {
 		t.Fatalf("Expected stack to exist, but it does not.")

@@ -1,24 +1,23 @@
-package models
+package config
 
 import (
 	"fmt"
+	"github.com/Shackelford-Arden/hctx/models"
 	"github.com/Shackelford-Arden/hctx/types"
 	"github.com/hashicorp/hcl/v2/hclsimple"
 	"os"
 	"strings"
 )
 
-type Config struct {
-	Stacks []Stack `hcl:"stack,block"`
-	Shell  string  `hcl:"shell,optional"`
-}
+const ConfigParentDir = ".config"
+const ConfigDir = "hctx"
+const ConfigFileName = "config.hcl"
+const OldConfigFileName = ".hctx.hcl"
 
-type Stack struct {
-	Name   string        `hcl:",label"`
-	Alias  string        `hcl:"alias,optional"`
-	Nomad  *NomadConfig  `hcl:"nomad,block"`
-	Consul *ConsulConfig `hcl:"consul,block"`
-	Vault  *VaultConfig  `hcl:"vault,block"`
+type Config struct {
+	Stacks    []Stack `hcl:"stack,block"`
+	Shell     string  `hcl:"shell,optional"`
+	CacheAuth bool    `hcl:"cache_auth,optional"`
 }
 
 func NewConfig(cp string) (*Config, error) {
@@ -33,7 +32,7 @@ func NewConfig(cp string) (*Config, error) {
 			os.Exit(10)
 		}
 
-		configPath = fmt.Sprintf("%s/.config/%s", userHome, ".hctx.hcl")
+		configPath = fmt.Sprintf("%s/%s/%s/%s", userHome, ConfigParentDir, ConfigDir, ConfigFileName)
 	}
 
 	// Check if there is a config file
@@ -64,22 +63,76 @@ func NewConfig(cp string) (*Config, error) {
 	return &config, nil
 }
 
+// Map Provides the stacks in a map for easier use in some use cases
+func (c *Config) Map() map[string]Stack {
+
+	stacks := make(map[string]Stack)
+
+	for _, stack := range c.Stacks {
+		stacks[stack.Name] = stack
+		stacks[stack.Alias] = stack
+	}
+
+	return stacks
+}
+
+// GetStack Checks if the stack exists in the current configuration
+func (c *Config) GetStack(name string) *Stack {
+
+	if stack, stackExists := c.Map()[name]; stackExists {
+		return &stack
+	}
+
+	return nil
+}
+
+// GetCurrentStack Checks current environment variable(s) to identify current stack, if any
+func (c *Config) GetCurrentStack() *Stack {
+	currentStackName := os.Getenv(types.StackNameEnv)
+	if currentStackName != "" {
+		for _, stack := range c.Stacks {
+			if stack.Name == currentStackName || stack.Alias == currentStackName {
+				return &stack
+			}
+		}
+	}
+
+	return nil
+}
+
+type Stack struct {
+	Name   string               `hcl:",label"`
+	Alias  string               `hcl:"alias,optional"`
+	Nomad  *models.NomadConfig  `hcl:"nomad,block"`
+	Consul *models.ConsulConfig `hcl:"consul,block"`
+	Vault  *models.VaultConfig  `hcl:"vault,block"`
+}
+
 // Use provides commands to set appropriate environment variables
-func (s *Stack) Use(shell string) string {
+func (s *Stack) Use(shell string, cache *models.StackCache) string {
 	// Include Stack Name as an environment variable
 	// Allow the Alias name to show in the environment variable
 	stackName := s.Name
 	if s.Alias != "" {
 		stackName = s.Alias
 	}
+
+	var nomadToken string
+	var consulToken string
+
+	if cache != nil {
+		nomadToken = cache.NomadToken
+		consulToken = cache.ConsulToken
+	}
+
 	var exportCommands = []string{fmt.Sprintf("\nexport %s='%s'", types.StackNameEnv, stackName)}
 
 	if s.Nomad != nil {
-		exportCommands = append(exportCommands, s.Nomad.Use(shell)...)
+		exportCommands = append(exportCommands, s.Nomad.Use(shell, nomadToken)...)
 	}
 
 	if s.Consul != nil {
-		exportCommands = append(exportCommands, s.Consul.Use(shell)...)
+		exportCommands = append(exportCommands, s.Consul.Use(shell, consulToken)...)
 	}
 
 	if s.Vault != nil {
@@ -112,27 +165,4 @@ func (s *Stack) Unset(shell string) string {
 	var unsetCommand = strings.Join(unsetCommands, "\n")
 
 	return unsetCommand
-}
-
-// Map Provides the stacks in a map for easier use in some use cases
-func (c *Config) Map() map[string]Stack {
-
-	stacks := make(map[string]Stack)
-
-	for _, stack := range c.Stacks {
-		stacks[stack.Name] = stack
-		stacks[stack.Alias] = stack
-	}
-
-	return stacks
-}
-
-// StackExists Checks if the stack exists in the current configuration
-func (c *Config) StackExists(name string) *Stack {
-
-	if stack, stackExists := c.Map()[name]; stackExists {
-		return &stack
-	}
-
-	return nil
 }

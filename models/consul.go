@@ -1,5 +1,7 @@
 package models
 
+import "os"
+
 type ConsulConfig struct {
 	Address   string `hcl:"address,optional"`
 	Namespace string `hcl:"namespace,optional"`
@@ -7,9 +9,10 @@ type ConsulConfig struct {
 
 var ConsulAddr = "CONSUL_HTTP_ADDR"
 var ConsulNamespace = "CONSUL_NAMESPACE"
+var ConsulToken = "CONSUL_HTTP_TOKEN"
 
 // Use provides commands to set appropriate Consul environment variables.
-func (n *ConsulConfig) Use(shell string) []string {
+func (n *ConsulConfig) Use(shell string, token string) []string {
 	var envCommands []string
 
 	if n.Address != "" {
@@ -18,6 +21,10 @@ func (n *ConsulConfig) Use(shell string) []string {
 
 	if n.Namespace != "" {
 		envCommands = append(envCommands, genUseCommands(shell, ConsulNamespace, n.Namespace))
+	}
+
+	if token != "" {
+		envCommands = append(envCommands, genUseCommands(shell, ConsulToken, token))
 	}
 
 	return envCommands
@@ -34,6 +41,10 @@ func (n *ConsulConfig) Unset(shell string) []string {
 
 	if n.Namespace != "" {
 		unsetCommands = append(unsetCommands, genUnsetCommands(shell, ConsulNamespace))
+	}
+
+	if os.Getenv(ConsulToken) != "" {
+		unsetCommands = append(unsetCommands, genUnsetCommands(shell, ConsulToken))
 	}
 
 	return unsetCommands

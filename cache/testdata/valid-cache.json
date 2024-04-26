@@ -1,0 +1,5 @@
+{
+  "test": {
+    "nomad-token": "test-token"
+  }
+}
