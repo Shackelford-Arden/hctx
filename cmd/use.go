@@ -19,7 +19,6 @@ func Use(ctx *cli.Context) error {
 
 	currentStack := AppConfig.GetCurrentStack()
 	// Get current stacks tokens, if any and cache them
-	fmt.Printf("Value of cache_auth: %v", AppConfig.CacheAuth)
 	if currentStack != nil && AppConfig.CacheAuth {
 		toCache := cache.GetCacheableValues()
 		updateErr := AppCache.Update(currentStack.Name, toCache)
