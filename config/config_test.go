@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/Shackelford-Arden/hctx/models"
 	"github.com/Shackelford-Arden/hctx/types"
-	"testing"
 )
 
 // region Bash/ZSH
@@ -17,7 +18,7 @@ func TestNewConfigUseFullNomad(t *testing.T) {
 	}
 
 	stackName := "just_nomad"
-	useOut := cfg.GetStack(stackName).Use("bash", nil)
+	useOut := cfg.GetStack(stackName).Use("bash", nil, false)
 
 	expectedOutput := fmt.Sprintf(`
 export %s='%s'
@@ -38,7 +39,7 @@ func TestNewConfigUseFullConsul(t *testing.T) {
 		t.Fatalf("failed to read config: %s", err)
 	}
 	stackName := "just_consul"
-	useOut := cfg.GetStack(stackName).Use("bash", nil)
+	useOut := cfg.GetStack(stackName).Use("bash", nil, false)
 
 	expectedOutput := fmt.Sprintf(`
 export %s='%s'
@@ -60,7 +61,7 @@ func TestNewConfigUseFullVault(t *testing.T) {
 	}
 
 	stackName := "just_vault"
-	useOut := cfg.GetStack(stackName).Use("bash", nil)
+	useOut := cfg.GetStack(stackName).Use("bash", nil, false)
 
 	expectedOutput := fmt.Sprintf(`
 export %s='%s'

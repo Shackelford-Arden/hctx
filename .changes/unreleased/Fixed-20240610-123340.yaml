@@ -1,0 +1,5 @@
+kind: Fixed
+body: Fixed bug where cache setting was not actually being checked
+time: 2024-06-10T12:33:40.797971-05:00
+custom:
+    Author: Shackelford-Arden
