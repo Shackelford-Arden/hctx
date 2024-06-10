@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/Shackelford-Arden/hctx/models"
 	"github.com/Shackelford-Arden/hctx/types"
 	"github.com/hashicorp/hcl/v2/hclsimple"
-	"os"
-	"strings"
 )
 
 const ConfigParentDir = ".config"
@@ -109,7 +110,7 @@ type Stack struct {
 }
 
 // Use provides commands to set appropriate environment variables
-func (s *Stack) Use(shell string, cache *models.StackCache) string {
+func (s *Stack) Use(shell string, cache *models.StackCache, useCache bool) string {
 	// Include Stack Name as an environment variable
 	// Allow the Alias name to show in the environment variable
 	stackName := s.Name
@@ -120,7 +121,7 @@ func (s *Stack) Use(shell string, cache *models.StackCache) string {
 	var nomadToken string
 	var consulToken string
 
-	if cache != nil {
+	if cache != nil && useCache {
 		nomadToken = cache.NomadToken
 		consulToken = cache.ConsulToken
 	}

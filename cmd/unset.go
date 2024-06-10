@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/urfave/cli/v2"
 )
@@ -16,10 +17,12 @@ func Unset(ctx *cli.Context) error {
 	}
 
 	// Get current stacks tokens, if any and cache them
-	toCache := cache.GetCacheableValues()
-	updateErr := AppCache.Update(currentStack.Name, toCache)
-	if updateErr != nil {
-		return fmt.Errorf("could not update cache for stack %s: %v", currentStack.Name, updateErr)
+	if AppConfig.CacheAuth {
+		toCache := cache.GetCacheableValues()
+		updateErr := AppCache.Update(currentStack.Name, toCache)
+		if updateErr != nil {
+			return fmt.Errorf("could not update cache for stack %s: %v", currentStack.Name, updateErr)
+		}
 	}
 
 	fmt.Println(currentStack.Unset(AppConfig.Shell))
