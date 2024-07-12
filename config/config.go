@@ -26,7 +26,7 @@ func NewConfig(cp string) (*Config, error) {
 	var configPath = cp
 
 	if cp == "" {
-		// Get user homedir
+		// GetStack user homedir
 		userHome, homeErr := os.UserHomeDir()
 		if homeErr != nil {
 			fmt.Printf("failed to get user homedir: %s", homeErr)

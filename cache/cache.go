@@ -3,9 +3,10 @@ package cache
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"github.com/Shackelford-Arden/hctx/config"
 	"github.com/Shackelford-Arden/hctx/models"
-	"os"
 )
 
 const FilePerms = os.FileMode(0600)
@@ -81,7 +82,8 @@ func (c *Cache) Update(stackName string, data models.StackCache) error {
 	return nil
 }
 
-func (c *Cache) Get(stackName string) *models.StackCache {
+// GetStack retrieves the cache for the given stack.
+func (c *Cache) GetStack(stackName string) *models.StackCache {
 	var cacheStack *models.StackCache
 
 	for name, cache := range *c {
@@ -92,6 +94,18 @@ func (c *Cache) Get(stackName string) *models.StackCache {
 	}
 
 	return cacheStack
+}
+
+// Get retrieves the full cache blob, typically for displaying.
+func (c *Cache) Get() (map[string]models.StackCache, error) {
+
+	cache := map[string]models.StackCache{}
+
+	for stackName, stackCache := range *c {
+		cache[stackName] = stackCache
+	}
+
+	return cache, nil
 }
 
 func (c *Cache) Save(path string) error {
