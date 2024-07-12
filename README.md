@@ -118,14 +118,27 @@ With this enabled, `hctx` will store credentials when switching between stacks.
 This can be helpful when/if you need to quickly switch between two or more stacks, but
 don't want to bother with authenticating each time you switch.
 
-_Note: Using `unset` will not cache anything, as it assumes you are no longer using
-that stack._
+_Note: Using `unset` will cache any token currently set in environment variables._
 
 Preferably, Nomad and Consul CLIs would do the caching for you. If
 either implement this in the future, `hctx` will be updated to prefer
 those methods over itself.
 
 You can find cache file in `~/.config/hctx/cache.json`.
+
+You can also view the current cache by running:
+
+```shell
+hctx cache show
+```
+
+#### Cache Management
+
+`hctx` includes a few commands to interact with your cache:
+
+* `cache show`
+* `cache clean` - This simply finds stacks that have expired tokens and cleans them out.
+* `cache clear` - This removes all cache items.
 
 ### Shell Prompts
 
@@ -165,11 +178,6 @@ format = 'hctx [$env_value]($style)'
   - Could potentially come into play w/ shell prompt updating
 - [x] Add support for stack aliases
   - Let daily usage use shorter names where shell prompt updating uses slightly more verbose naming
-- [ ] Add `add` command
-  - **Due to the way HCL itself works, this is not an option while using HCL as the config file.**
-- [ ] Add `edit` command
-  - I'd want to make sure that a user could modify a single attribute of a stack.
-  - **Due to the way HCL itself works, this is not an option while using HCL as the config file.**
 
 ## Maybes
 
@@ -200,8 +208,6 @@ I wonder if there is a way to have a shell setup to pass raw commands
 such as `nomad` to `hctx` without having to include `hctx run` :eyes:
 
 ### Binary Version Management
-
-Boy, brain really starts going nuts if it is allowed, huh?
 
 Name is fairly self-explanatory. Main reason for thinking about this is
 there may be times there some environments have version sprawl and
