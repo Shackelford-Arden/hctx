@@ -4,9 +4,14 @@ import (
 	"fmt"
 
 	"github.com/Shackelford-Arden/hctx/cache"
+	"github.com/Shackelford-Arden/hctx/models"
 	"github.com/urfave/cli/v2"
 )
 
+// Use sets the appropriate environment variables to use
+// the selected Stack.
+// If caching is disabled, this will also unset any
+// existing env vars for tokens (ie NOMAD_TOKEN).
 func Use(ctx *cli.Context) error {
 
 	stackName := ctx.Args().First()
@@ -18,7 +23,7 @@ func Use(ctx *cli.Context) error {
 	}
 
 	currentStack := AppConfig.GetCurrentStack()
-	// Get current stacks tokens, if any and cache them
+	// If caching is enabled, set to cache.
 	if currentStack != nil && AppConfig.CacheAuth {
 		toCache := cache.GetCacheableValues()
 		updateErr := AppCache.Update(currentStack.Name, toCache)
@@ -27,10 +32,15 @@ func Use(ctx *cli.Context) error {
 		}
 	}
 
-	// rehydrate env w/ new stack cache, if present
-	newStackCache := AppCache.Get(selectedStack.Name)
+	useOut := unsetTokens(AppConfig.Shell)
+	var stackCache *models.StackCache
+	if AppConfig.CacheAuth {
+		stackCache = AppCache.Get(selectedStack.Name)
+	}
 
-	fmt.Print(selectedStack.Use(AppConfig.Shell, newStackCache, AppConfig.CacheAuth))
+	useOut += selectedStack.Use(AppConfig.Shell, stackCache, AppConfig.CacheAuth)
+
+	fmt.Println(useOut)
 
 	return nil
 }
