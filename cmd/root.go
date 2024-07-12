@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
+
 	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/Shackelford-Arden/hctx/config"
 	"github.com/urfave/cli/v2"
-	"log/slog"
-	"os"
 )
 
 var AppConfig *config.Config
@@ -56,13 +57,13 @@ func ValidateConfig(ctx *cli.Context) error {
 	}
 
 	// Get Cache
-	cache, cacheErr := cache.NewCache("")
+	cacheItem, cacheErr := cache.NewCache("")
 	if cacheErr != nil {
 		return cacheErr
 	}
 
 	AppConfig = cfg
-	AppCache = cache
+	AppCache = cacheItem
 
 	return nil
 }
@@ -113,6 +114,29 @@ func App() (*cli.App, error) {
 				Action:  Activate,
 				Usage:   "Used to generate the appropriate shell scripts to set environment variables.",
 				Args:    true,
+			},
+			{
+				Name:    "cache",
+				Aliases: []string{"c"},
+				Usage:   "Interact with the cache.",
+				Subcommands: []*cli.Command{
+					{
+						Name:    "show",
+						Aliases: []string{"s"},
+						Usage:   "ShowCache the current cache",
+						Action:  ShowCache,
+					},
+					{
+						Name:   "clear",
+						Usage:  "Clears out the cache of all items.",
+						Action: ClearCache,
+					},
+					{
+						Name:   "clean",
+						Usage:  "Checks all cached items and removes those that have expired.",
+						Action: CleanCache,
+					},
+				},
 			},
 		},
 	}

@@ -53,7 +53,7 @@ func TestValidCache(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cacheItem := cache.Get("test")
+	cacheItem := cache.GetStack("test")
 
 	if cacheItem == nil {
 		t.Fatal("cache item is nil when it shouldn't be")
@@ -72,7 +72,7 @@ func TestMissingCacheItem(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cacheItem := cache.Get("fake-test")
+	cacheItem := cache.GetStack("fake-test")
 
 	if cacheItem != nil {
 		t.Fatal("cached item should be nil, as fake-test should be missing.")

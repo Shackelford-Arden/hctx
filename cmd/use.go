@@ -23,22 +23,69 @@ func Use(ctx *cli.Context) error {
 	}
 
 	currentStack := AppConfig.GetCurrentStack()
-	// If caching is enabled, set to cache.
+	// If caching is enabled, cache current stack tokens.
 	if currentStack != nil && AppConfig.CacheAuth {
+		currentCache := AppCache.GetStack(currentStack.Name)
 		toCache := cache.GetCacheableValues()
+		if toCache.NomadToken != "" {
+			validToken := validNomadToken(selectedStack.Nomad.Address, toCache.NomadToken)
+			if validToken {
+				currentCache.NomadToken = toCache.NomadToken
+			}
+		}
+
+		if toCache.ConsulToken != "" {
+			validToken := validConsulToken(selectedStack.Consul.Address, toCache.ConsulToken)
+			if validToken {
+				currentCache.ConsulToken = toCache.ConsulToken
+			}
+		}
 		updateErr := AppCache.Update(currentStack.Name, toCache)
 		if updateErr != nil {
 			return fmt.Errorf("could not update cache for stack %s: %v", currentStack.Name, updateErr)
 		}
+		_ = AppCache.Save("")
 	}
 
 	useOut := unsetTokens(AppConfig.Shell)
-	var stackCache *models.StackCache
-	if AppConfig.CacheAuth {
-		stackCache = AppCache.Get(selectedStack.Name)
+	currentStackCache := AppCache.GetStack(selectedStack.Name)
+
+	// Pull in cache of selected stack, clearing out
+	// any that are invalid.
+	if AppConfig.CacheAuth && currentStackCache != nil {
+
+		cleanCache := models.StackCache{}
+
+		// Validate if tokens have expired.
+		cleanCache.NomadToken = currentStackCache.NomadToken
+		if currentStackCache.NomadToken != "" && selectedStack.Nomad != nil {
+			nomToken := validNomadToken(selectedStack.Nomad.Address, currentStackCache.NomadToken)
+			if !nomToken {
+				// Remove expired token from cache
+				cleanCache.NomadToken = ""
+			}
+		}
+
+		cleanCache.ConsulToken = currentStackCache.ConsulToken
+		if currentStackCache.ConsulToken != "" && selectedStack.Consul != nil {
+			conToken := validNomadToken(selectedStack.Consul.Address, currentStackCache.ConsulToken)
+			if !conToken {
+				// Remove expired token from cache
+				cleanCache.ConsulToken = ""
+			}
+		}
+
+		err := AppCache.Update(selectedStack.Name, cleanCache)
+		if err != nil {
+			return fmt.Errorf("could not update cache for stack %s: %v", selectedStack.Name, err)
+		}
+
+		// Set this so that correct values are pulled in
+		// later when cached values are pulled in, if enabled
+		currentStackCache = &cleanCache
 	}
 
-	useOut += selectedStack.Use(AppConfig.Shell, stackCache, AppConfig.CacheAuth)
+	useOut += selectedStack.Use(AppConfig.Shell, currentStackCache, AppConfig.CacheAuth)
 
 	fmt.Println(useOut)
 
