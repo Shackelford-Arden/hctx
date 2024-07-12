@@ -68,7 +68,7 @@ func Use(ctx *cli.Context) error {
 
 		cleanCache.ConsulToken = currentStackCache.ConsulToken
 		if currentStackCache.ConsulToken != "" && selectedStack.Consul != nil {
-			conToken := validNomadToken(selectedStack.Consul.Address, currentStackCache.ConsulToken)
+			conToken := validConsulToken(selectedStack.Consul.Address, currentStackCache.ConsulToken)
 			if !conToken {
 				// Remove expired token from cache
 				cleanCache.ConsulToken = ""
