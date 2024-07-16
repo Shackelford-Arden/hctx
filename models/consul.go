@@ -1,7 +1,5 @@
 package models
 
-import "os"
-
 type ConsulConfig struct {
 	Address   string `hcl:"address,optional"`
 	Namespace string `hcl:"namespace,optional"`
@@ -43,9 +41,7 @@ func (n *ConsulConfig) Unset(shell string) []string {
 		unsetCommands = append(unsetCommands, genUnsetCommands(shell, ConsulNamespace))
 	}
 
-	if os.Getenv(ConsulToken) != "" {
-		unsetCommands = append(unsetCommands, genUnsetCommands(shell, ConsulToken))
-	}
+	unsetCommands = append(unsetCommands, genUnsetCommands(shell, ConsulToken))
 
 	return unsetCommands
 }
