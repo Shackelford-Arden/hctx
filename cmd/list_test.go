@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -80,11 +79,11 @@ stack "test-01" {
 			t.Errorf("Command execution failed: %v", err)
 		}
 
-		expectedContent := strings.TrimSpace(fmt.Sprintf(`
+		expectedContent := strings.TrimSpace(`
 Stacks:
   test-01 *
 `,
-		))
+		)
 
 		if !strings.Contains(output, expectedContent) {
 			t.Errorf("Expected output to contain '%s', but got: %s", expectedContent, output)
@@ -153,11 +152,11 @@ stack "test-01" {
 			t.Errorf("Command execution failed: %v", err)
 		}
 
-		expectedContent := strings.TrimSpace(fmt.Sprintf(`
+		expectedContent := strings.TrimSpace(`
 Stacks:
   test-01
 `,
-		))
+		)
 
 		if !strings.Contains(output, expectedContent) {
 			t.Errorf("Expected output to contain '%s', but got: %s", expectedContent, output)
