@@ -77,8 +77,8 @@ func ClearCache(ctx *cli.Context) error {
 // ShowCache shows the content of the cache file.
 func ShowCache(ctx *cli.Context) error {
 
-	cache, _ := AppCache.Get()
-	fmtCache, fmtErr := json.MarshalIndent(cache, "", "  ")
+	currentCache, _ := AppCache.Get()
+	fmtCache, fmtErr := json.MarshalIndent(currentCache, "", "  ")
 	if fmtErr != nil {
 		return fmt.Errorf("failed to read/format the cache: %s", fmtErr.Error())
 	}

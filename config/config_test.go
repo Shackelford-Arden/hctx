@@ -88,8 +88,9 @@ func TestNewConfigUnsetNomad(t *testing.T) {
 	expectedOutput := fmt.Sprintf(`
 unset %s
 unset %s
+unset %s
 unset %s`,
-		types.StackNameEnv, models.NomadAddr, models.NomadNamespace)
+		types.StackNameEnv, models.NomadAddr, models.NomadNamespace, models.NomadToken)
 
 	if unsetOut != expectedOutput {
 		t.Fatalf("\nExpected: %s\nActual: %s", expectedOutput, unsetOut)

@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Shackelford-Arden/hctx/types"
 	"os"
+
+	"github.com/Shackelford-Arden/hctx/types"
 
 	"github.com/urfave/cli/v2"
 )

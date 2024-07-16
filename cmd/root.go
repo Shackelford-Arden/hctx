@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/Shackelford-Arden/hctx/build"
 	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/Shackelford-Arden/hctx/config"
 	"github.com/urfave/cli/v2"
@@ -15,43 +16,49 @@ var AppCache *cache.Cache
 
 func ValidateConfig(ctx *cli.Context) error {
 
-	userHome, homeErr := os.UserHomeDir()
-	if homeErr != nil {
-		fmt.Printf("failed to get user homedir: %s", homeErr)
-		os.Exit(10)
-	}
+	userConfig := ctx.String("config")
+	if userConfig == "" {
 
-	configPath := fmt.Sprintf("%s/%s/%s", userHome, config.ConfigParentDir, config.ConfigDir)
-	configFilePath := fmt.Sprintf("%s/%s/%s/%s", userHome, config.ConfigParentDir, config.ConfigDir, config.ConfigFileName)
-	configOldPath := fmt.Sprintf("%s/%s/%s", userHome, config.ConfigParentDir, config.OldConfigFileName)
-
-	_, err := os.Stat(configPath)
-	if os.IsNotExist(err) {
-		// Create the directory
-		err := os.Mkdir(configPath, 0744)
-		if err != nil {
-			return fmt.Errorf("failed to create %s: %s", configPath, err)
+		userHome, homeErr := os.UserHomeDir()
+		if homeErr != nil {
+			fmt.Printf("failed to get user homedir: %s", homeErr)
+			os.Exit(10)
 		}
-	}
 
-	oldConfig, _ := os.Stat(configOldPath)
-	newConfig, newConfigStatErr := os.Stat(configFilePath)
+		configPath := fmt.Sprintf("%s/%s/%s", userHome, config.ConfigParentDir, config.ConfigDir)
+		configFilePath := fmt.Sprintf("%s/%s/%s/%s", userHome, config.ConfigParentDir, config.ConfigDir, config.ConfigFileName)
+		configOldPath := fmt.Sprintf("%s/%s/%s", userHome, config.ConfigParentDir, config.OldConfigFileName)
 
-	if oldConfig != nil && newConfig != nil {
-		slog.InfoContext(ctx.Context, fmt.Sprintf("both %s and %s exist. Only using %s, please merge the config files then remove %s", configPath, configOldPath, configPath, configOldPath))
-	}
-
-	if oldConfig != nil && os.IsNotExist(newConfigStatErr) {
-
-		// Copy old config to new config path
-		copyErr := os.Rename(configOldPath, configFilePath)
-		if copyErr != nil {
-			return fmt.Errorf("failed to copy %s to %s: %s", configOldPath, configFilePath, copyErr)
+		_, err := os.Stat(configPath)
+		if os.IsNotExist(err) {
+			// Create the directory
+			err := os.Mkdir(configPath, 0744)
+			if err != nil {
+				return fmt.Errorf("failed to create %s: %s", configPath, err)
+			}
 		}
+
+		oldConfig, _ := os.Stat(configOldPath)
+		newConfig, newConfigStatErr := os.Stat(configFilePath)
+
+		if oldConfig != nil && newConfig != nil {
+			slog.InfoContext(ctx.Context, fmt.Sprintf("both %s and %s exist. Only using %s, please merge the config files then remove %s", configPath, configOldPath, configPath, configOldPath))
+		}
+
+		if oldConfig != nil && os.IsNotExist(newConfigStatErr) {
+
+			// Copy old config to new config path
+			copyErr := os.Rename(configOldPath, configFilePath)
+			if copyErr != nil {
+				return fmt.Errorf("failed to copy %s to %s: %s", configOldPath, configFilePath, copyErr)
+			}
+		}
+
+		userConfig = configFilePath
 	}
 
 	// Parse config
-	cfg, cfgErr := config.NewConfig("")
+	cfg, cfgErr := config.NewConfig(userConfig)
 	if cfgErr != nil {
 		return cfgErr
 	}
@@ -72,8 +79,10 @@ func App() (*cli.App, error) {
 
 	app := &cli.App{
 		Name:        "Hashi Context",
+		Usage:       "Managing your Hashi contexts with style!",
 		HelpName:    "hctx",
 		Description: "A CLI tool to help you manage your CLI life interacting with some of HashiCorp's products.",
+		Version:     fmt.Sprintf("%s - %s - built with %s on %s", build.Version, build.Commit, build.BuiltWith, build.Date),
 		Authors: []*cli.Author{
 			{
 				Name:  "Arden Shackelford",
@@ -81,6 +90,18 @@ func App() (*cli.App, error) {
 			},
 		},
 		Before: ValidateConfig,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "config",
+				Aliases: []string{"c"},
+				Usage:   "Path to config file to use.",
+				Hidden:  true,
+			},
+			&cli.StringFlag{
+				Name:   "shell",
+				Hidden: true,
+			},
+		},
 		Commands: []*cli.Command{
 			{
 				Name:    "list",

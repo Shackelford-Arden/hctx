@@ -1,7 +1,5 @@
 package models
 
-import "os"
-
 type NomadConfig struct {
 	Address   string `hcl:"address,optional"`
 	Namespace string `hcl:"namespace,optional"`
@@ -43,9 +41,7 @@ func (n *NomadConfig) Unset(shell string) []string {
 		unsetCommands = append(unsetCommands, genUnsetCommands(shell, NomadNamespace))
 	}
 
-	if os.Getenv(NomadToken) != "" {
-		unsetCommands = append(unsetCommands, genUnsetCommands(shell, NomadToken))
-	}
+	unsetCommands = append(unsetCommands, genUnsetCommands(shell, NomadToken))
 
 	return unsetCommands
 }
