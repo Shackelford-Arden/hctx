@@ -3,6 +3,8 @@
 Small project for myself to learn some new things and make one
 part of my work day just a little bit easier.
 
+For contributing, please see out [contributing docs](./CONTRIBUTING.md).
+
 ## Getting Started
 
 ### Installation
@@ -88,7 +90,7 @@ hctx use prd
 Doing this will only set the environment variables for the config items in the stack. In this case, it would set
 `NOMAD_ADDR` and `HCTX_STACK_NAME`.
 
-Notice that the `alias` for this stick is different than the stack name given at the block level. This can be handy
+Notice that the `alias` for this stick is different from the stack name given at the block level. This can be handy
 if/when you configure your shell prompt to potentially change colors depending on a particular environment variable.
 
 ### Stop using a Stack
@@ -172,7 +174,7 @@ format = 'hctx [$env_value]($style)'
   - Default should be a simple list of stack names.
   - With something like a `-verbose` flag (w/ an alias of `-v`!), include full values of each stack
     - Probably table format
-- [ ] Add self-update
+- [X] Add self-update
 - [x] Add configuration to indicate an environment is production
   - This is "available" by letting users use aliases. Users can update their prompts accordingly.
   - Could potentially come into play w/ shell prompt updating
@@ -223,7 +225,7 @@ what I wanted/needed.
 
 - [mise](https://github.com/jdx/mise)
     - This project is pretty cool, and covers _alot_ of installs. Written in Rust,
-      it was a bit outside of my area of expertise and I wanted to (for now!)
+      it was a bit outside my area of expertise and I wanted to (for now!)
       focus on just a few languages, so figured learn from `mise` and
       see what I could do on my own in Go.
     - I do use `mise` for some things today.

@@ -3,9 +3,10 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/urfave/cli/v2"
+
 	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/Shackelford-Arden/hctx/models"
-	"github.com/urfave/cli/v2"
 )
 
 // Use sets the appropriate environment variables to use
@@ -26,6 +27,11 @@ func Use(ctx *cli.Context) error {
 	// If caching is enabled, cache current stack tokens.
 	if currentStack != nil && AppConfig.CacheAuth {
 		currentCache := AppCache.GetStack(currentStack.Name)
+
+		if currentCache == nil {
+			currentCache = &models.StackCache{}
+		}
+
 		toCache := cache.GetCacheableValues()
 		if toCache.NomadToken != "" {
 			validToken := validNomadToken(selectedStack.Nomad.Address, toCache.NomadToken)

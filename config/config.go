@@ -5,9 +5,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/hashicorp/hcl/v2/hclsimple"
+
 	"github.com/Shackelford-Arden/hctx/models"
 	"github.com/Shackelford-Arden/hctx/types"
-	"github.com/hashicorp/hcl/v2/hclsimple"
 )
 
 const ConfigParentDir = ".config"
@@ -53,8 +54,7 @@ func NewConfig(cp string) (*Config, error) {
 	var config Config
 
 	if cfgErr := hclsimple.DecodeFile(configPath, nil, &config); cfgErr != nil {
-		fmt.Printf("failed to decode config: %s", cfgErr)
-		os.Exit(2)
+		return nil, fmt.Errorf("failed to decode config: %s", cfgErr)
 	}
 
 	if config.Shell == "" {

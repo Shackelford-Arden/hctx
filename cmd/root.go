@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"log/slog"
 	"os"
+
+	"github.com/urfave/cli/v2"
 
 	"github.com/Shackelford-Arden/hctx/build"
 	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/Shackelford-Arden/hctx/config"
-	"github.com/urfave/cli/v2"
 )
 
 var AppConfig *config.Config
@@ -21,8 +21,7 @@ func ValidateConfig(ctx *cli.Context) error {
 
 		userHome, homeErr := os.UserHomeDir()
 		if homeErr != nil {
-			fmt.Printf("failed to get user homedir: %s", homeErr)
-			os.Exit(10)
+			return fmt.Errorf("failed to get user homedir: %s", homeErr)
 		}
 
 		configPath := fmt.Sprintf("%s/%s/%s", userHome, config.ConfigParentDir, config.ConfigDir)
@@ -42,7 +41,7 @@ func ValidateConfig(ctx *cli.Context) error {
 		newConfig, newConfigStatErr := os.Stat(configFilePath)
 
 		if oldConfig != nil && newConfig != nil {
-			slog.InfoContext(ctx.Context, fmt.Sprintf("both %s and %s exist. Only using %s, please merge the config files then remove %s", configPath, configOldPath, configPath, configOldPath))
+			fmt.Println(fmt.Sprintf("both %s and %s exist. Only using %s, please merge the config files then remove %s", configPath, configOldPath, configPath, configOldPath))
 		}
 
 		if oldConfig != nil && os.IsNotExist(newConfigStatErr) {
@@ -156,6 +155,34 @@ func App() (*cli.App, error) {
 						Name:   "clean",
 						Usage:  "Checks all cached items and removes those that have expired.",
 						Action: CleanCache,
+					},
+				},
+			},
+			{
+				Name:  "self",
+				Usage: "Actions for interacting with hctx itself.",
+				Subcommands: []*cli.Command{
+					{
+						Name:   "update",
+						Usage:  "Will attempt to find the latest release and download it. Connectivity to Github is required!",
+						Action: SelfUpdate,
+					},
+					{
+						Name:   "show-path",
+						Usage:  "Gives you the absolute path to the hctx binary.",
+						Action: ShowPath,
+					},
+				},
+			},
+			{
+				Name:   "version",
+				Usage:  "Display the version of hctx",
+				Action: ShowVersion,
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:  "check-latest",
+						Usage: "Will attempt to check Github and see what the latest version is",
+						Value: false,
 					},
 				},
 			},

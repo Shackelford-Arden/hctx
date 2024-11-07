@@ -19,6 +19,8 @@ kinds:
   auto: patch
 - label: Security
   auto: patch
+- label: Internal
+  auto: none
 newlines:
   afterChangelogHeader: 1
   beforeChangelogVersion: 1
