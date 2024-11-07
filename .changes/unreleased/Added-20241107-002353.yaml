@@ -1,0 +1,5 @@
+kind: Added
+body: '`self update` command added to allow pulling in the latest version'
+time: 2024-11-07T00:23:53.234060594-06:00
+custom:
+    Author: Shackelford-Arden

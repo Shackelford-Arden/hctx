@@ -21,7 +21,7 @@ builds:
       - windows
       - darwin
     ldflags:
-      - -s -w -X version.Version={{.Version}} -X version.Commit={{.Commit}} -X version.Date={{.Date}} -X version.BuiltWith=goreleaser
+      - -s -w -X "github.com/Shackelford-Arden/hctx/build.Version={{.Version}}" -X "github.com/Shackelford-Arden/hctx/build.Commit={{.Commit}}" -X "github.com/Shackelford-Arden/hctx/build.Date={{.Date}}" -X "github.com/Shackelford-Arden/hctx/build.BuiltWith=goreleaser"
 
 archives:
   - format: tar.gz
@@ -29,10 +29,7 @@ archives:
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}
+      {{ .Arch }}
     # use zip for windows archives
     format_overrides:
       - goos: windows

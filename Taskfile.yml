@@ -1,0 +1,28 @@
+version: "3"
+
+tasks:
+  test:
+    cmds:
+      - cmd: go test ./...
+
+  fmt:
+    cmds:
+      - cmd: go fmt ./...
+
+  check:
+    cmds:
+      - cmd: go mod tidy
+      - cmd: go vet ./...
+      - cmd: staticcheck ./...
+
+  pre-commit:
+    aliases:
+      - pc
+    cmds:
+      - task: fmt
+      - task: check
+      - task: test
+
+  build-dev:
+    cmds:
+      - cmd: go build -ldflags "-X github.com/Shackelford-Arden/hctx/build.Version=0.0.1 -X github.com/Shackelford-Arden/hctx/build.Commit=dev -X github.com/Shackelford-Arden/hctx/build.Date=now -X github.com/Shackelford-Arden/hctx/build.BuiltWith=go"

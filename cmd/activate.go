@@ -37,7 +37,17 @@ hctx () {
   case "$command" in
   (use|u|unset|un) if [[ ! " $@ " =~ " --help " ]] && [[ ! " $@ " =~ " -h " ]]
     then
-      eval "$(command $HCTX_PATH "$command" "$@")"
+
+      USE_OUTPUT="$(command $HCTX_PATH "$command" "$@")"
+
+      # Doing this if to avoid attempting to run the eval command
+      # on somethinig that shouldn't be run through eval (like an error message!)
+      if [[ $? -eq 0 ]]; then
+        eval "${USE_OUTPUT}"
+      else
+        echo "${USE_OUTPUT}"
+      fi
+
       return $?
     fi ;;
   esac
