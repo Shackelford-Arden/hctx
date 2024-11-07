@@ -25,7 +25,7 @@ func ShowVersion(ctx *cli.Context) error {
 
 		latestVersion, lvError := gh.GetLatestRelease()
 		if lvError != nil {
-			return fmt.Errorf("Failed to get latest version: %s", lvError.Error())
+			return fmt.Errorf("failed to get latest version: %s", lvError.Error())
 		}
 
 		fmt.Printf("Latest version: %s\n", latestVersion.TagName)

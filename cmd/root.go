@@ -41,7 +41,7 @@ func ValidateConfig(ctx *cli.Context) error {
 		newConfig, newConfigStatErr := os.Stat(configFilePath)
 
 		if oldConfig != nil && newConfig != nil {
-			fmt.Println(fmt.Sprintf("both %s and %s exist. Only using %s, please merge the config files then remove %s", configPath, configOldPath, configPath, configOldPath))
+			fmt.Printf("both %s and %s exist. Only using %s, please merge the config files then remove %s\n", configPath, configOldPath, configPath, configOldPath)
 		}
 
 		if oldConfig != nil && os.IsNotExist(newConfigStatErr) {

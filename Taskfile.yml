@@ -13,7 +13,7 @@ tasks:
     cmds:
       - cmd: go mod tidy
       - cmd: go vet ./...
-      - cmd: staticcheck
+      - cmd: staticcheck ./...
 
   pre-commit:
     aliases:

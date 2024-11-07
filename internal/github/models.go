@@ -35,7 +35,7 @@ func (r *Release) Version() string {
 
 func (r *Release) TarballUrl() string {
 
-	fmt.Println(fmt.Sprintf("Looking for %s", releaseName()))
+	fmt.Printf("Looking for %s", releaseName())
 	for _, asset := range r.Assets {
 		fmt.Println(asset.Name)
 		if strings.HasSuffix(asset.Name, releaseName()) {

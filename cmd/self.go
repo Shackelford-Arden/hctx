@@ -36,20 +36,20 @@ func SelfUpdate(ctx *cli.Context) error {
 
 	latestVersion, lvError := gh.GetLatestRelease()
 	if lvError != nil {
-		return fmt.Errorf("Failed to get latest version: %s", lvError.Error())
+		return fmt.Errorf("failed to get latest version: %s", lvError.Error())
 	}
 
 	if semver.Compare(build.Version, latestVersion.Version()) != -1 {
 		return fmt.Errorf("current version is either already the latest, or we failed to parse versions correctly")
 	}
 
-	fmt.Println(fmt.Sprintf("Downloading %s...", latestVersion.Version()))
+	fmt.Printf("Downloading %s...", latestVersion.Version())
 
 	// Identify the download URL
 	downloadUrl := latestVersion.TarballUrl()
 
 	if downloadUrl == "" {
-		return fmt.Errorf("release information didn't include an appropriate file to download.")
+		return fmt.Errorf("release information didn't include an appropriate file to download")
 	}
 
 	// Download the release
