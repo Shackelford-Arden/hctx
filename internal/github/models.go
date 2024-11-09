@@ -67,6 +67,13 @@ func releaseName() string {
 	osName = strings.ToUpper(osName[:1]) + osName[1:]
 
 	osArch := runtime.GOARCH
+	if osArch == "amd64" {
+		osArch = "x86_64"
+	}
+
+	if osArch == "386" {
+		osArch = "i386"
+	}
 
 	return fmt.Sprintf("hctx_%s_%s.tar.gz", osName, osArch)
 

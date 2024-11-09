@@ -23,6 +23,20 @@ tasks:
       - task: check
       - task: test
 
+  build-test:
+    cmds:
+      - cmd: goreleaser release --snapshot --clean
+
   build-dev:
     cmds:
       - cmd: go build -ldflags "-X github.com/Shackelford-Arden/hctx/build.Version=0.0.1 -X github.com/Shackelford-Arden/hctx/build.Commit=dev -X github.com/Shackelford-Arden/hctx/build.Date=now -X github.com/Shackelford-Arden/hctx/build.BuiltWith=go"
+
+  tag-it:
+    vars:
+      LATEST_RELEASE:
+        sh: changie batch auto && changie merge && changie latest
+    cmds:
+      - cmd: git tag -a "{{.LATEST_RELEASE}}" -m "{{.LATEST_RELEASE}}"
+      - cmd: git push --tags
+      - cmd: git add CHANGELOG.md
+      - cmd: git push
