@@ -3,8 +3,9 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/urfave/cli/v2"
+
+	"github.com/Shackelford-Arden/hctx/cache"
 )
 
 // Unset Remove everything hctx configured in the environment variables
@@ -31,7 +32,7 @@ func Unset(ctx *cli.Context) error {
 		}
 	}
 
-	fmt.Println(currentStack.Unset(AppConfig.Shell))
+	fmt.Println(ActiveShell.UnsetOutput(currentStack.Unset()))
 
 	return nil
 

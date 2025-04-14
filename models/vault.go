@@ -9,32 +9,32 @@ var VaultAddr = "VAULT_ADDR"
 var VaultNamespace = "VAULT_NAMESPACE"
 
 // Use provides commands to set appropriate Vault environment variables.
-func (n *VaultConfig) Use(shell string) []string {
-	var envCommands []string
+func (n *VaultConfig) Use() map[string]string {
+	envVars := map[string]string{}
 
 	if n.Address != "" {
-		envCommands = append(envCommands, genUseCommands(shell, VaultAddr, n.Address))
+		envVars[VaultAddr] = n.Address
 	}
 
 	if n.Namespace != "" {
-		envCommands = append(envCommands, genUseCommands(shell, VaultNamespace, n.Namespace))
+		envVars[VaultNamespace] = n.Namespace
 	}
 
-	return envCommands
+	return envVars
 }
 
 // Unset Provides commands to unset the Vault environment variables for the given stack
-func (n *VaultConfig) Unset(shell string) []string {
+func (n *VaultConfig) Unset() []string {
 
-	var unsetCommands []string
+	envVarNames := []string{}
 
 	if n.Address != "" {
-		unsetCommands = append(unsetCommands, genUnsetCommands(shell, VaultAddr))
+		envVarNames = append(envVarNames, VaultAddr)
 	}
 
 	if n.Namespace != "" {
-		unsetCommands = append(unsetCommands, genUnsetCommands(shell, VaultNamespace))
+		envVarNames = append(envVarNames, VaultNamespace)
 	}
 
-	return unsetCommands
+	return envVarNames
 }

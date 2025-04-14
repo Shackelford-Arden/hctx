@@ -9,10 +9,12 @@ import (
 	"github.com/Shackelford-Arden/hctx/build"
 	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/Shackelford-Arden/hctx/config"
+	"github.com/Shackelford-Arden/hctx/internal/shells"
 )
 
 var AppConfig *config.Config
 var AppCache *cache.Cache
+var ActiveShell shells.Shell
 
 func ValidateConfig(ctx *cli.Context) error {
 
@@ -70,6 +72,7 @@ func ValidateConfig(ctx *cli.Context) error {
 
 	AppConfig = cfg
 	AppCache = cacheItem
+	ActiveShell = shells.DiscoverShell()
 
 	return nil
 }

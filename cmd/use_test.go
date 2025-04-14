@@ -87,7 +87,8 @@ stack "test-01" {
 		}
 
 		expectedContent := strings.TrimSpace(`
-export NOMAD_ADDR=http://localhost:4646
+export HCTX_STACK_NAME="test-01"
+export NOMAD_ADDR="http://localhost:4646"
 `,
 		)
 

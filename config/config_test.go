@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/Shackelford-Arden/hctx/models"
@@ -18,18 +18,16 @@ func TestNewConfigUseFullNomad(t *testing.T) {
 	}
 
 	stackName := "just_nomad"
-	useOut := cfg.GetStack(stackName).Use("bash", nil, false)
-
-	expectedOutput := fmt.Sprintf(`
-export %s='%s'
-export %s=http://localhost:4646
-export %s=default`,
-		types.StackNameEnv, stackName, models.NomadAddr, models.NomadNamespace)
-
-	if useOut != expectedOutput {
-		t.Fatalf("\nExpected: %s\nActual: %s", expectedOutput, useOut)
+	useOut := cfg.GetStack(stackName).Use(nil, false)
+	expectedOutput := map[string]string{
+		types.StackNameEnv:    stackName,
+		models.NomadAddr:      "http://localhost:4646",
+		models.NomadNamespace: "default",
 	}
 
+	if !reflect.DeepEqual(useOut, expectedOutput) {
+		t.Fatalf("\nExpected: %s\nActual: %s", expectedOutput, useOut)
+	}
 }
 
 func TestNewConfigUseFullConsul(t *testing.T) {
@@ -39,15 +37,15 @@ func TestNewConfigUseFullConsul(t *testing.T) {
 		t.Fatalf("failed to read config: %s", err)
 	}
 	stackName := "just_consul"
-	useOut := cfg.GetStack(stackName).Use("bash", nil, false)
+	useOut := cfg.GetStack(stackName).Use(nil, false)
 
-	expectedOutput := fmt.Sprintf(`
-export %s='%s'
-export %s=http://localhost:8500
-export %s=default`,
-		types.StackNameEnv, stackName, models.ConsulAddr, models.ConsulNamespace)
+	expectedOutput := map[string]string{
+		types.StackNameEnv:     stackName,
+		models.ConsulAddr:      "http://localhost:8500",
+		models.ConsulNamespace: "default",
+	}
 
-	if useOut != expectedOutput {
+	if !reflect.DeepEqual(useOut, expectedOutput) {
 		t.Fatalf("\nExpected: %s\nActual: %s", expectedOutput, useOut)
 	}
 
@@ -61,15 +59,15 @@ func TestNewConfigUseFullVault(t *testing.T) {
 	}
 
 	stackName := "just_vault"
-	useOut := cfg.GetStack(stackName).Use("bash", nil, false)
+	useOut := cfg.GetStack(stackName).Use(nil, false)
 
-	expectedOutput := fmt.Sprintf(`
-export %s='%s'
-export %s=http://localhost:8200
-export %s=default`,
-		types.StackNameEnv, stackName, models.VaultAddr, models.VaultNamespace)
+	expectedOutput := map[string]string{
+		types.StackNameEnv:    stackName,
+		models.VaultAddr:      "http://localhost:8200",
+		models.VaultNamespace: "default",
+	}
 
-	if useOut != expectedOutput {
+	if !reflect.DeepEqual(useOut, expectedOutput) {
 		t.Fatalf("\nExpected: %s\nActual: %s", expectedOutput, useOut)
 	}
 
@@ -83,16 +81,11 @@ func TestNewConfigUnsetNomad(t *testing.T) {
 	}
 
 	stackName := "just_nomad"
-	unsetOut := cfg.GetStack(stackName).Unset("bash")
+	unsetOut := cfg.GetStack(stackName).Unset()
 
-	expectedOutput := fmt.Sprintf(`
-unset %s
-unset %s
-unset %s
-unset %s`,
-		types.StackNameEnv, models.NomadAddr, models.NomadNamespace, models.NomadToken)
+	expectedOutput := []string{types.StackNameEnv, models.NomadToken, models.NomadAddr, models.NomadNamespace}
 
-	if unsetOut != expectedOutput {
+	if !reflect.DeepEqual(unsetOut, expectedOutput) {
 		t.Fatalf("\nExpected: %s\nActual: %s", expectedOutput, unsetOut)
 	}
 

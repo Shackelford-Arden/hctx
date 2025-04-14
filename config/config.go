@@ -57,8 +57,26 @@ func NewConfig(cp string) (*Config, error) {
 		return nil, fmt.Errorf("failed to decode config: %s", cfgErr)
 	}
 
-	if config.Shell == "" {
+	// Discover shell
+	var shellName string
+	nuVersion := os.Getenv("NU_VERSION")
+	shellEnvVar := os.Getenv("SHELL")
+
+	// Let Nushell discovery take precedent, if present
+	// as it seemingly doesn't set `SHELL` itself, like other shells do
+	if nuVersion != "" {
+		shellName = "nushell"
+	}
+
+	if shellEnvVar != "" && shellName == "" {
+		splitName := strings.Split(shellEnvVar, "/")
+		shellName = splitName[len(splitName)-1]
+	}
+
+	if shellName == "" {
 		config.Shell = "bash"
+	} else {
+		config.Shell = shellName
 	}
 
 	return &config, nil
@@ -110,7 +128,7 @@ type Stack struct {
 }
 
 // Use provides commands to set appropriate environment variables
-func (s *Stack) Use(shell string, cache *models.StackCache, useCache bool) string {
+func (s *Stack) Use(cache *models.StackCache, useCache bool) map[string]string {
 	// Include Stack Name as an environment variable
 	// Allow the Alias name to show in the environment variable
 	stackName := s.Name
@@ -126,44 +144,48 @@ func (s *Stack) Use(shell string, cache *models.StackCache, useCache bool) strin
 		consulToken = cache.ConsulToken
 	}
 
-	var exportCommands = []string{fmt.Sprintf("\nexport %s='%s'", types.StackNameEnv, stackName)}
+	envVars := map[string]string{}
+
+	envVars[types.StackNameEnv] = stackName
 
 	if s.Nomad != nil {
-		exportCommands = append(exportCommands, s.Nomad.Use(shell, nomadToken)...)
+		for k, v := range s.Nomad.Use(nomadToken) {
+			envVars[k] = v
+		}
 	}
 
 	if s.Consul != nil {
-		exportCommands = append(exportCommands, s.Consul.Use(shell, consulToken)...)
+		for k, v := range s.Consul.Use(consulToken) {
+			envVars[k] = v
+		}
 	}
 
 	if s.Vault != nil {
-		exportCommands = append(exportCommands, s.Vault.Use(shell)...)
+		for k, v := range s.Vault.Use() {
+			envVars[k] = v
+		}
 	}
 
-	var exportCommand = strings.Join(exportCommands, "\n")
-
-	return exportCommand
+	return envVars
 }
 
 // Unset Provides shell commands to unset environment variables
-func (s *Stack) Unset(shell string) string {
+func (s *Stack) Unset() []string {
 
 	// Remove Stack environment variables
-	var unsetCommands = []string{fmt.Sprintf("\nunset %s", types.StackNameEnv)}
+	var envVars = []string{types.StackNameEnv}
 
 	if s.Nomad != nil {
-		unsetCommands = append(unsetCommands, s.Nomad.Unset(shell)...)
+		envVars = append(envVars, s.Nomad.Unset()...)
 	}
 
 	if s.Consul != nil {
-		unsetCommands = append(unsetCommands, s.Consul.Unset(shell)...)
+		envVars = append(envVars, s.Consul.Unset()...)
 	}
 
 	if s.Vault != nil {
-		unsetCommands = append(unsetCommands, s.Vault.Unset(shell)...)
+		envVars = append(envVars, s.Vault.Unset()...)
 	}
 
-	var unsetCommand = strings.Join(unsetCommands, "\n")
-
-	return unsetCommand
+	return envVars
 }

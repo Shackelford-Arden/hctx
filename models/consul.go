@@ -10,38 +10,36 @@ var ConsulNamespace = "CONSUL_NAMESPACE"
 var ConsulToken = "CONSUL_HTTP_TOKEN"
 
 // Use provides commands to set appropriate Consul environment variables.
-func (n *ConsulConfig) Use(shell string, token string) []string {
-	var envCommands []string
+func (n *ConsulConfig) Use(token string) map[string]string {
+	envVars := map[string]string{}
 
 	if n.Address != "" {
-		envCommands = append(envCommands, genUseCommands(shell, ConsulAddr, n.Address))
+		envVars[ConsulAddr] = n.Address
 	}
 
 	if n.Namespace != "" {
-		envCommands = append(envCommands, genUseCommands(shell, ConsulNamespace, n.Namespace))
+		envVars[ConsulNamespace] = n.Namespace
 	}
 
 	if token != "" {
-		envCommands = append(envCommands, genUseCommands(shell, ConsulToken, token))
+		envVars[ConsulToken] = token
 	}
 
-	return envCommands
+	return envVars
 }
 
 // Unset Provides commands to unset the Consul environment variables for the given stack
-func (n *ConsulConfig) Unset(shell string) []string {
+func (n *ConsulConfig) Unset() []string {
 
-	var unsetCommands []string
+	envVarNames := []string{ConsulToken}
 
 	if n.Address != "" {
-		unsetCommands = append(unsetCommands, genUnsetCommands(shell, ConsulAddr))
+		envVarNames = append(envVarNames, ConsulAddr)
 	}
 
 	if n.Namespace != "" {
-		unsetCommands = append(unsetCommands, genUnsetCommands(shell, ConsulNamespace))
+		envVarNames = append(envVarNames, ConsulNamespace)
 	}
 
-	unsetCommands = append(unsetCommands, genUnsetCommands(shell, ConsulToken))
-
-	return unsetCommands
+	return envVarNames
 }

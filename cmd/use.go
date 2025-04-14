@@ -24,6 +24,7 @@ func Use(ctx *cli.Context) error {
 	}
 
 	currentStack := AppConfig.GetCurrentStack()
+
 	// If caching is enabled, cache current stack tokens.
 	if currentStack != nil && AppConfig.CacheAuth {
 		currentCache := AppCache.GetStack(currentStack.Name)
@@ -53,7 +54,6 @@ func Use(ctx *cli.Context) error {
 		_ = AppCache.Save("")
 	}
 
-	useOut := unsetTokens(AppConfig.Shell)
 	currentStackCache := AppCache.GetStack(selectedStack.Name)
 
 	// Pull in cache of selected stack, clearing out
@@ -91,7 +91,7 @@ func Use(ctx *cli.Context) error {
 		currentStackCache = &cleanCache
 	}
 
-	useOut += selectedStack.Use(AppConfig.Shell, currentStackCache, AppConfig.CacheAuth)
+	useOut := ActiveShell.UseOutput(selectedStack.Use(currentStackCache, AppConfig.CacheAuth))
 
 	fmt.Println(useOut)
 

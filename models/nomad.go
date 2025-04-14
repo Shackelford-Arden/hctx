@@ -9,39 +9,39 @@ var NomadAddr = "NOMAD_ADDR"
 var NomadNamespace = "NOMAD_NAMESPACE"
 var NomadToken = "NOMAD_TOKEN"
 
-// Use provides commands to set appropriate Nomad environment variables.
-func (n *NomadConfig) Use(shell string, token string) []string {
-	var envCommands []string
+// Use provides a map of environment variables and their expected values that will
+// be used by a shells.Shell to generate appropriate commands to set the environment
+// variables.
+func (n *NomadConfig) Use(token string) map[string]string {
+	envVars := map[string]string{}
 
 	if n.Address != "" {
-		envCommands = append(envCommands, genUseCommands(shell, NomadAddr, n.Address))
+		envVars[NomadAddr] = n.Address
 	}
 
 	if n.Namespace != "" {
-		envCommands = append(envCommands, genUseCommands(shell, NomadNamespace, n.Namespace))
+		envVars[NomadNamespace] = n.Namespace
 	}
 
 	if token != "" {
-		envCommands = append(envCommands, genUseCommands(shell, NomadToken, token))
+		envVars[NomadToken] = token
 	}
 
-	return envCommands
+	return envVars
 }
 
-// Unset Provides commands to unset the Nomad environment variables for the given stack
-func (n *NomadConfig) Unset(shell string) []string {
+// Unset provides a list of environment variables that should be unset by the shells.Shell.
+func (n *NomadConfig) Unset() []string {
 
-	var unsetCommands []string
+	envVarNames := []string{NomadToken}
 
 	if n.Address != "" {
-		unsetCommands = append(unsetCommands, genUnsetCommands(shell, NomadAddr))
+		envVarNames = append(envVarNames, NomadAddr)
 	}
 
 	if n.Namespace != "" {
-		unsetCommands = append(unsetCommands, genUnsetCommands(shell, NomadNamespace))
+		envVarNames = append(envVarNames, NomadNamespace)
 	}
 
-	unsetCommands = append(unsetCommands, genUnsetCommands(shell, NomadToken))
-
-	return unsetCommands
+	return envVarNames
 }
