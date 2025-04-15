@@ -50,7 +50,7 @@ jobs:
           # either 'goreleaser' (default) or 'goreleaser-pro'
           distribution: goreleaser
           version: latest
-          args: release --clean --release-notes="changes/v${{ steps.latest.outputs.output }}" --skip-validate
+          args: release --clean --release-notes="changes/v${{ steps.latest.outputs.output }}" --skip=validate
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           GORELEASER_CURRENT_TAG: "v${{ steps.latest.outputs.output }}"
