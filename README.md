@@ -163,6 +163,21 @@ You can also view the current cache by running:
 hctx cache show
 ```
 
+#### Sharing Tokens
+
+##### Nomad
+
+Sometimes you're working between multiple Nomad regions/datacenters and the tokens are federated.
+
+To maintain the same token between stacks that:
+
+```hcl
+share_nomad_tokens = true
+```
+
+Setting this will first check if the current token (value of `NOMAD_TOKEN`) is valid against the target
+Nomad cluster. If it is, it will once again be set as the current token.
+
 #### Cache Management
 
 `hctx` includes a few commands to interact with your cache:

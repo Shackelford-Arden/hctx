@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/urfave/cli/v2"
+
 	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/Shackelford-Arden/hctx/models"
-	"github.com/urfave/cli/v2"
 )
 
 // CleanCache checks all items in the cache file
@@ -43,7 +44,7 @@ func CleanCache(ctx *cli.Context) error {
 		}
 
 		if stackCache.ConsulToken != "" && configStack.Consul != nil {
-			conToken := validNomadToken(configStack.Consul.Address, stackCache.ConsulToken)
+			conToken := validConsulToken(configStack.Consul.Address, stackCache.ConsulToken)
 			if !conToken {
 				// Remove expired token from cache
 				cleanCache.ConsulToken = ""

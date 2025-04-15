@@ -24,6 +24,7 @@ func Use(ctx *cli.Context) error {
 	}
 
 	currentStack := AppConfig.GetCurrentStack()
+	currentTokens := cache.GetCacheableValues()
 
 	// If caching is enabled, cache current stack tokens.
 	if currentStack != nil && AppConfig.CacheAuth {
@@ -33,21 +34,20 @@ func Use(ctx *cli.Context) error {
 			currentCache = &models.StackCache{}
 		}
 
-		toCache := cache.GetCacheableValues()
-		if toCache.NomadToken != "" {
-			validToken := validNomadToken(selectedStack.Nomad.Address, toCache.NomadToken)
+		if currentTokens.NomadToken != "" {
+			validToken := validNomadToken(selectedStack.Nomad.Address, currentTokens.NomadToken)
 			if validToken {
-				currentCache.NomadToken = toCache.NomadToken
+				currentCache.NomadToken = currentTokens.NomadToken
 			}
 		}
 
-		if toCache.ConsulToken != "" {
-			validToken := validConsulToken(selectedStack.Consul.Address, toCache.ConsulToken)
+		if currentTokens.ConsulToken != "" {
+			validToken := validConsulToken(selectedStack.Consul.Address, currentTokens.ConsulToken)
 			if validToken {
-				currentCache.ConsulToken = toCache.ConsulToken
+				currentCache.ConsulToken = currentTokens.ConsulToken
 			}
 		}
-		updateErr := AppCache.Update(currentStack.Name, toCache)
+		updateErr := AppCache.Update(currentStack.Name, currentTokens)
 		if updateErr != nil {
 			return fmt.Errorf("could not update cache for stack %s: %v", currentStack.Name, updateErr)
 		}
@@ -89,6 +89,23 @@ func Use(ctx *cli.Context) error {
 		// Set this so that correct values are pulled in
 		// later when cached values are pulled in, if enabled
 		currentStackCache = &cleanCache
+	}
+
+	// Attempt to use the active token on the newly selected stack
+	if selectedStack.Nomad != nil && currentTokens.NomadToken != "" && AppConfig.ShareNomadToken {
+
+		// This handles:
+		// 1) If the user has caching disabled (which is the default)
+		// 2) If there was no cache for the stack
+		if currentStackCache == nil {
+			currentStackCache = &models.StackCache{}
+		}
+
+		// Check and see if the current token is valid on the new stack
+		validTokenOnSelected := validNomadToken(selectedStack.Nomad.Address, currentTokens.NomadToken)
+		if validTokenOnSelected {
+			currentStackCache.NomadToken = currentTokens.NomadToken
+		}
 	}
 
 	useOut := ActiveShell.UseOutput(selectedStack.Use(currentStackCache, AppConfig.CacheAuth))

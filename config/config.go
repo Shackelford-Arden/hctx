@@ -17,9 +17,10 @@ const ConfigFileName = "config.hcl"
 const OldConfigFileName = ".hctx.hcl"
 
 type Config struct {
-	Stacks    []Stack `hcl:"stack,block"`
-	Shell     string  `hcl:"shell,optional"`
-	CacheAuth bool    `hcl:"cache_auth,optional"`
+	Stacks          []Stack `hcl:"stack,block"`
+	Shell           string  `hcl:"shell,optional"`
+	CacheAuth       bool    `hcl:"cache_auth,optional"`
+	ShareNomadToken bool    `hcl:"share_nomad_token,optional"`
 }
 
 func NewConfig(cp string) (*Config, error) {
