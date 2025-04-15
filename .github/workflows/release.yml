@@ -41,8 +41,8 @@ jobs:
 
       - name: Create tag
         run: |
-          git tag "v${{ steps.latest.outputs.output }}"
-          git push origin "v${{ steps.latest.outputs.output }}"
+          git tag "${{ steps.latest.outputs.output }}"
+          git push origin "${{ steps.latest.outputs.output }}"
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
@@ -50,10 +50,10 @@ jobs:
           # either 'goreleaser' (default) or 'goreleaser-pro'
           distribution: goreleaser
           version: latest
-          args: release --clean --release-notes="changes/v${{ steps.latest.outputs.output }}" --skip=validate
+          args: release --clean --release-notes="changes/${{ steps.latest.outputs.output }}" --skip=validate
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          GORELEASER_CURRENT_TAG: "v${{ steps.latest.outputs.output }}"
+          GORELEASER_CURRENT_TAG: "${{ steps.latest.outputs.output }}"
 
       # Commit and push the updated CHANGELOG.md
       - name: Commit CHANGELOG
@@ -62,5 +62,5 @@ jobs:
           git config --global user.email 'actions@github.com'
           git add CHANGELOG.md
           git add .changes/
-          git commit -m "Update CHANGELOG.md for v${NEW_VERSION} [skip ci]" || echo "No changes to commit"
+          git commit -m "Update CHANGELOG.md for ${{ steps.latest.outputs.output }} [skip ci]" || echo "No changes to commit"
           git push origin main
