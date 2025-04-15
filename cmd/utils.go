@@ -5,26 +5,6 @@ import (
 	nomad "github.com/hashicorp/nomad/api"
 )
 
-func unsetTokens(shell string) string {
-
-	output := ""
-
-	switch shell {
-	case "bash":
-		fallthrough
-	case "zsh":
-		fallthrough
-	default:
-		output = `
-unset NOMAD_TOKEN
-unset CONSUL_TOKEN
-unset VAULT_TOKEN
-`
-	}
-
-	return output
-}
-
 // validNomadToken checks if the given token is still valid.
 // Docs: https://developer.hashicorp.com/nomad/api-docs/acl/tokens#read-self-token
 func validNomadToken(addr string, token string) bool {

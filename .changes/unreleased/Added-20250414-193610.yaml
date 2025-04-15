@@ -1,0 +1,5 @@
+kind: Added
+body: Ability to share tokens (validated upon switch stacks) between stacks using `share_nomad_token`
+time: 2025-04-14T19:36:10.880960727-05:00
+custom:
+    Author: Shackelford-Arden

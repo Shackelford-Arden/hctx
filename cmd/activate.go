@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/urfave/cli/v2"
+
+	"github.com/Shackelford-Arden/hctx/internal/shells"
 )
 
 // Activate provides the given shell with the commands to set environment variables
@@ -12,52 +14,25 @@ import (
 func Activate(ctx *cli.Context) error {
 
 	execPath, _ := os.Executable()
-	activateScript := ""
 
 	shell := ctx.String("shell")
 	if shell == "" {
 		shell = AppConfig.Shell
 	}
 
+	var sh shells.Shell
+
 	switch shell {
+	case "nushell":
+		sh = &shells.Nushell{}
+
 	default:
 		// This bash/zsh script is pretty much the same as what mise has
 		// Reference: https://github.com/jdx/mise/blob/be34b768d9c09feda3c59d9a949a40609c294dcf/src/shell/zsh.rs#L17
-		activateScript = fmt.Sprintf(`
-hctx () {
-  local command
-  HCTX_PATH='%s'
-  command="${1:-}"
-  if [ "$#" = 0 ]
-  then
-    command $HCTX_PATH
-    return
-  fi
-  shift
-  case "$command" in
-  (use|u|unset|un) if [[ ! " $@ " =~ " --help " ]] && [[ ! " $@ " =~ " -h " ]]
-    then
-
-      USE_OUTPUT="$(command $HCTX_PATH "$command" "$@")"
-
-      # Doing this if to avoid attempting to run the eval command
-      # on somethinig that shouldn't be run through eval (like an error message!)
-      if [[ $? -eq 0 ]]; then
-        eval "${USE_OUTPUT}"
-      else
-        echo "${USE_OUTPUT}"
-      fi
-
-      return $?
-    fi ;;
-  esac
-  command $HCTX_PATH "$command" "$@"
-}
-`, execPath,
-		)
+		sh = &shells.Bash{}
 	}
 
-	fmt.Print(activateScript)
+	fmt.Print(sh.Activate(execPath))
 
 	return nil
 }

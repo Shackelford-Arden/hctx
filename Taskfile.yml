@@ -39,4 +39,5 @@ tasks:
       - cmd: git tag -a "{{.LATEST_RELEASE}}" -m "{{.LATEST_RELEASE}}"
       - cmd: git push --tags
       - cmd: git add CHANGELOG.md
+      - cmd: git commit -m "{{.LATEST_RELEASE}} changelog update"
       - cmd: git push

@@ -13,7 +13,18 @@ Download the latest [release](https://github.com/Shackelford-Arden/hctx/releases
 
 Place it wherever you'd like, so long as it is in your $PATH (or equivalent for your shell).
 
+#### dist
+
+If you have [dist](https://github.com/ekristen/distillery) installed, you can install `hctx` like this:
+
+```shell
+dist install github/Shackelford-Arden/hctx
+```
+
 ### Configure Shell
+
+The following assumes that `hctx` is in your `PATH`. If it is not, you will need to either
+make it available in `PATH` or update the path to hctx's binary.
 
 #### Bash/ZSH
 
@@ -32,6 +43,24 @@ source ~/.bashrc
 # zsh
 source ~/.zshrc
 ```
+
+#### Nushell
+
+To use hctx with Nushell, you'll need to add this to your `config.nu`:
+
+```nu
+# need to make sure the autoload directory exists
+mkdir ~/.config/nushell/autoload
+# Nu doesn't have an equivalent to Bash's `eval`, so we have to save the script to disk
+# This does mean that if future versions change the script, this will need to be done
+hctx activate | save -f ~/.config/nushell/autoload/hctx.nu
+```
+
+##### Notes
+
+In future versions of `hctx`, we may make this more of a "managed" experience, but opting for the manual
+path for now until an optimal path exists. Thinking about doing something like `hctx init nushell` and have
+this be what gets planed in the user's `config.nu`.
 
 ### Define Your Configuration
 
@@ -133,6 +162,21 @@ You can also view the current cache by running:
 ```shell
 hctx cache show
 ```
+
+#### Sharing Tokens
+
+##### Nomad
+
+Sometimes you're working between multiple Nomad regions/datacenters and the tokens are federated.
+
+To maintain the same token between stacks that:
+
+```hcl
+share_nomad_tokens = true
+```
+
+Setting this will first check if the current token (value of `NOMAD_TOKEN`) is valid against the target
+Nomad cluster. If it is, it will once again be set as the current token.
 
 #### Cache Management
 

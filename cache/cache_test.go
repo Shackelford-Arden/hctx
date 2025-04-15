@@ -78,3 +78,19 @@ func TestMissingCacheItem(t *testing.T) {
 		t.Fatal("cached item should be nil, as fake-test should be missing.")
 	}
 }
+
+func TestGetMissingStack(t *testing.T) {
+	cachePath := "testdata/valid-cache.json"
+
+	cache, err := NewCache(cachePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	nonExistentStackName := "nonexistent-stack"
+
+	stackData := cache.GetStack(nonExistentStackName)
+	if stackData != nil {
+		t.Fatalf("Expected nil when requesting a missing stack: %s", nonExistentStackName)
+	}
+}
