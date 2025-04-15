@@ -39,6 +39,11 @@ jobs:
           version: latest
           args: latest
 
+      - name: Create tag
+        run: |
+          git tag "v${{ steps.latest.outputs.output }}"
+          git push origin "v${{ steps.latest.outputs.output }}"
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
