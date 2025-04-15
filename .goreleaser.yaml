@@ -29,7 +29,8 @@ builds:
       - -s -w -X "github.com/Shackelford-Arden/hctx/build.Version={{.Version}}" -X "github.com/Shackelford-Arden/hctx/build.Commit={{.Commit}}" -X "github.com/Shackelford-Arden/hctx/build.Date={{.Date}}" -X "github.com/Shackelford-Arden/hctx/build.BuiltWith=goreleaser"
 
 archives:
-  - format: tar.gz
+  - formats:
+      - tar.gz
     # this name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
       {{ .ProjectName }}_
@@ -40,7 +41,8 @@ archives:
       {{- if .Arm }}v{{ .Arm }}{{ end }}
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
 
 changelog:
   disable: false
