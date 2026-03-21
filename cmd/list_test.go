@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"os"
 	"strings"
@@ -59,7 +60,7 @@ stack "test-01" {
 		t.Setenv(types.StackNameEnv, "test-01")
 
 		args := []string{"hctx", "--config", tmpConfig.Name(), "list"}
-		err = app.Run(args)
+		err = app.Run(context.Background(), args)
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}
@@ -132,7 +133,7 @@ stack "test-01" {
 		}()
 
 		args := []string{"hctx", "--config", tmpConfig.Name(), "list"}
-		err = app.Run(args)
+		err = app.Run(context.Background(), args)
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}

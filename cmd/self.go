@@ -3,20 +3,21 @@ package cmd
 import (
 	"archive/tar"
 	"compress/gzip"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"golang.org/x/mod/semver"
 
 	"github.com/Shackelford-Arden/hctx/build"
 	"github.com/Shackelford-Arden/hctx/internal/github"
 )
 
-func ShowPath(ctx *cli.Context) error {
+func ShowPath(_ context.Context, _ *cli.Command) error {
 
 	fullPath, _ := os.Executable()
 
@@ -25,7 +26,7 @@ func ShowPath(ctx *cli.Context) error {
 	return nil
 }
 
-func SelfUpdate(ctx *cli.Context) error {
+func SelfUpdate(_ context.Context, _ *cli.Command) error {
 
 	gh := github.NewClient("", "")
 	gt := os.Getenv("GITHUB_TOKEN")

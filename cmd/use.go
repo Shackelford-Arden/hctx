@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 
 	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/Shackelford-Arden/hctx/models"
@@ -13,9 +14,9 @@ import (
 // the selected Stack.
 // If caching is disabled, this will also unset any
 // existing env vars for tokens (ie NOMAD_TOKEN).
-func Use(ctx *cli.Context) error {
+func Use(_ context.Context, cmd *cli.Command) error {
 
-	stackName := ctx.Args().First()
+	stackName := cmd.Args().First()
 
 	selectedStack := AppConfig.GetStack(stackName)
 
@@ -108,7 +109,7 @@ func Use(ctx *cli.Context) error {
 		}
 	}
 
-	useOut := ActiveShell.UseOutput(selectedStack.Use(currentStackCache, AppConfig.CacheAuth))
+	useOut := resolveShell(cmd).UseOutput(selectedStack.Use(currentStackCache, AppConfig.CacheAuth))
 
 	fmt.Println(useOut)
 

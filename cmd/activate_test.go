@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -43,7 +44,7 @@ func TestActivateOutput(t *testing.T) {
 		}()
 
 		args := []string{"hctx", "--shell", "bash", "activate"}
-		err = app.Run(args)
+		err = app.Run(context.Background(), args)
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}

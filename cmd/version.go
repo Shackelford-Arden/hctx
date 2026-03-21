@@ -1,20 +1,21 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 
 	"github.com/Shackelford-Arden/hctx/build"
 	"github.com/Shackelford-Arden/hctx/internal/github"
 )
 
-func ShowVersion(ctx *cli.Context) error {
+func ShowVersion(_ context.Context, cmd *cli.Command) error {
 
 	fmt.Printf("Current version: %s\n", build.Version)
 
-	if ctx.Bool("check-latest") {
+	if cmd.Bool("check-latest") {
 
 		gh := github.NewClient("", "")
 		gt := os.Getenv("GITHUB_TOKEN")

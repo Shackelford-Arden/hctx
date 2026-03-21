@@ -1,10 +1,11 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 
 	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/Shackelford-Arden/hctx/models"
@@ -13,7 +14,7 @@ import (
 // CleanCache checks all items in the cache file
 // and removes any that have expired or are not valid,
 // including stacks that are no longer in the config.
-func CleanCache(ctx *cli.Context) error {
+func CleanCache(_ context.Context, _ *cli.Command) error {
 
 	newCache := cache.Cache{}
 	currentCache, err := AppCache.Get()
@@ -64,7 +65,7 @@ func CleanCache(ctx *cli.Context) error {
 }
 
 // ClearCache removes all items from the cache file.
-func ClearCache(ctx *cli.Context) error {
+func ClearCache(_ context.Context, _ *cli.Command) error {
 
 	AppCache = &cache.Cache{}
 	saveErr := AppCache.Save("")
@@ -76,7 +77,7 @@ func ClearCache(ctx *cli.Context) error {
 }
 
 // ShowCache shows the content of the cache file.
-func ShowCache(ctx *cli.Context) error {
+func ShowCache(_ context.Context, _ *cli.Command) error {
 
 	currentCache, _ := AppCache.Get()
 	fmtCache, fmtErr := json.MarshalIndent(currentCache, "", "  ")

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/Shackelford-Arden/hctx/config"
 	"github.com/Shackelford-Arden/hctx/types"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func basicList(currStack string, stacks []config.Stack) {
@@ -135,15 +136,15 @@ func detailedList(currStack string, stacks []config.Stack) {
 	fmt.Println(configTable)
 }
 
-func List(ctx *cli.Context) error {
+func List(_ context.Context, cmd *cli.Command) error {
 
 	if len(AppConfig.Stacks) == 0 {
-		fmt.Fprintf(ctx.App.Writer, "No stacks!\n")
+		fmt.Fprintf(os.Stdout, "No stacks!\n")
 		return nil
 	}
 
 	currStack := os.Getenv(types.StackNameEnv)
-	detailed := ctx.Bool("detailed")
+	detailed := cmd.Bool("detailed")
 
 	if detailed {
 		detailedList(currStack, AppConfig.Stacks)

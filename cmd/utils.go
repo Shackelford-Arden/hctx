@@ -3,6 +3,9 @@ package cmd
 import (
 	consul "github.com/hashicorp/consul/api"
 	nomad "github.com/hashicorp/nomad/api"
+	"github.com/urfave/cli/v3"
+
+	"github.com/Shackelford-Arden/hctx/internal/shells"
 )
 
 // validNomadToken checks if the given token is still valid.
@@ -51,4 +54,19 @@ func validConsulToken(addr string, token string) bool {
 	}
 
 	return true
+}
+
+// resolveShell determines the shell to use based on the --shell CLI flag,
+// falling back to the config's auto-discovered shell value.
+func resolveShell(cmd *cli.Command) shells.Shell {
+	name := cmd.String("shell")
+	if name == "" {
+		name = AppConfig.Shell
+	}
+	switch name {
+	case "nushell":
+		return &shells.Nushell{}
+	default:
+		return &shells.Bash{}
+	}
 }

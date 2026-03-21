@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/Shackelford-Arden/hctx/cmd"
 	"log"
 	"os"
+
+	"github.com/Shackelford-Arden/hctx/cmd"
 )
 
 func main() {
@@ -14,7 +16,7 @@ func main() {
 		fmt.Printf("error running hctx: %s", appErr)
 	}
 
-	if err := app.Run(os.Args); err != nil {
+	if err := app.Run(context.Background(), os.Args); err != nil {
 		log.Fatal(err)
 	}
 }

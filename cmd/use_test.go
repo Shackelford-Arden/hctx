@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"os"
 	"strings"
@@ -19,7 +20,7 @@ func TestUse(t *testing.T) {
 		defer tmpConfig.Close()
 
 		args := []string{"hctx", "--config", tmpConfig.Name(), "use", "test-01"}
-		err := app.Run(args)
+		err := app.Run(context.Background(), args)
 		if err.Error() != "no stack named test-01 in config" {
 			t.Errorf("Error received was not expected %v", err)
 		}
@@ -66,7 +67,7 @@ stack "test-01" {
 		}()
 
 		args := []string{"hctx", "--shell", "bash", "--config", tmpConfig.Name(), "use", "test-01"}
-		err = app.Run(args)
+		err = app.Run(context.Background(), args)
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}

@@ -1,29 +1,28 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 
 	"github.com/Shackelford-Arden/hctx/build"
 	"github.com/Shackelford-Arden/hctx/cache"
 	"github.com/Shackelford-Arden/hctx/config"
-	"github.com/Shackelford-Arden/hctx/internal/shells"
 )
 
 var AppConfig *config.Config
 var AppCache *cache.Cache
-var ActiveShell shells.Shell
 
-func ValidateConfig(ctx *cli.Context) error {
+func ValidateConfig(ctx context.Context, cmd *cli.Command) (context.Context, error) {
 
-	userConfig := ctx.String("config")
+	userConfig := cmd.String("config")
 	if userConfig == "" {
 
 		userHome, homeErr := os.UserHomeDir()
 		if homeErr != nil {
-			return fmt.Errorf("failed to get user homedir: %s", homeErr)
+			return ctx, fmt.Errorf("failed to get user homedir: %s", homeErr)
 		}
 
 		configPath := fmt.Sprintf("%s/%s/%s", userHome, config.ConfigParentDir, config.ConfigDir)
@@ -35,7 +34,7 @@ func ValidateConfig(ctx *cli.Context) error {
 			// Create the directory
 			err := os.Mkdir(configPath, 0744)
 			if err != nil {
-				return fmt.Errorf("failed to create %s: %s", configPath, err)
+				return ctx, fmt.Errorf("failed to create %s: %s", configPath, err)
 			}
 		}
 
@@ -51,7 +50,7 @@ func ValidateConfig(ctx *cli.Context) error {
 			// Copy old config to new config path
 			copyErr := os.Rename(configOldPath, configFilePath)
 			if copyErr != nil {
-				return fmt.Errorf("failed to copy %s to %s: %s", configOldPath, configFilePath, copyErr)
+				return ctx, fmt.Errorf("failed to copy %s to %s: %s", configOldPath, configFilePath, copyErr)
 			}
 		}
 
@@ -61,37 +60,29 @@ func ValidateConfig(ctx *cli.Context) error {
 	// Parse config
 	cfg, cfgErr := config.NewConfig(userConfig)
 	if cfgErr != nil {
-		return cfgErr
+		return ctx, cfgErr
 	}
 
 	// Get Cache
 	cacheItem, cacheErr := cache.NewCache("")
 	if cacheErr != nil {
-		return cacheErr
+		return ctx, cacheErr
 	}
 
 	AppConfig = cfg
 	AppCache = cacheItem
-	ActiveShell = shells.DiscoverShell()
 
-	return nil
+	return ctx, nil
 }
 
-func App() (*cli.App, error) {
+func App() (*cli.Command, error) {
 
-	app := &cli.App{
+	app := &cli.Command{
 		Name:        "Hashi Context",
 		Usage:       "Managing your Hashi contexts with style!",
-		HelpName:    "hctx",
 		Description: "A CLI tool to help you manage your CLI life interacting with some of HashiCorp's products.",
 		Version:     fmt.Sprintf("%s - %s - built with %s on %s", build.Version, build.Commit, build.BuiltWith, build.Date),
-		Authors: []*cli.Author{
-			{
-				Name:  "Arden Shackelford",
-				Email: "arden@ardens.tech",
-			},
-		},
-		Before: ValidateConfig,
+		Before:      ValidateConfig,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "config",
@@ -121,14 +112,12 @@ func App() (*cli.App, error) {
 				Name:    "use",
 				Aliases: []string{"u"},
 				Usage:   "Use the selected stack as your current stack.",
-				Args:    true,
 				Action:  Use,
 			},
 			{
 				Name:    "unset",
 				Aliases: []string{"un"},
 				Usage:   "Cleans up all managed environment variables for the current stack.",
-				Args:    false,
 				Action:  Unset,
 			},
 			{
@@ -136,13 +125,28 @@ func App() (*cli.App, error) {
 				Aliases: []string{"a"},
 				Action:  Activate,
 				Usage:   "Used to generate the appropriate shell scripts to set environment variables.",
-				Args:    true,
+			},
+			{
+				Name:  "self",
+				Usage: "Actions for interacting with hctx itself.",
+				Commands: []*cli.Command{
+					{
+						Name:   "update",
+						Usage:  "Will attempt to find the latest release and download it. Connectivity to Github is required!",
+						Action: SelfUpdate,
+					},
+					{
+						Name:   "show-path",
+						Usage:  "Gives you the absolute path to the hctx binary.",
+						Action: ShowPath,
+					},
+				},
 			},
 			{
 				Name:    "cache",
 				Aliases: []string{"c"},
 				Usage:   "Interact with the cache.",
-				Subcommands: []*cli.Command{
+				Commands: []*cli.Command{
 					{
 						Name:    "show",
 						Aliases: []string{"s"},
@@ -158,22 +162,6 @@ func App() (*cli.App, error) {
 						Name:   "clean",
 						Usage:  "Checks all cached items and removes those that have expired.",
 						Action: CleanCache,
-					},
-				},
-			},
-			{
-				Name:  "self",
-				Usage: "Actions for interacting with hctx itself.",
-				Subcommands: []*cli.Command{
-					{
-						Name:   "update",
-						Usage:  "Will attempt to find the latest release and download it. Connectivity to Github is required!",
-						Action: SelfUpdate,
-					},
-					{
-						Name:   "show-path",
-						Usage:  "Gives you the absolute path to the hctx binary.",
-						Action: ShowPath,
 					},
 				},
 			},
