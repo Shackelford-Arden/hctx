@@ -13,7 +13,11 @@ tasks:
     cmds:
       - cmd: go mod tidy
       - cmd: go vet ./...
-      - cmd: staticcheck ./...
+      - cmd: golangci-lint run ./...
+
+  build:
+    cmds:
+      - cmd: go build -o hctx
 
   pre-commit:
     aliases:
