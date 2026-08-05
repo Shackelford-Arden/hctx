@@ -10,7 +10,7 @@ kinds:
 - label: Added
   auto: minor
 - label: Changed
-  auto: major
+  auto: minor
 - label: Deprecated
   auto: minor
 - label: Removed
@@ -21,6 +21,8 @@ kinds:
   auto: patch
 - label: Internal
   auto: none
+- label: Breaking
+  auto: major
 newlines:
   afterChangelogHeader: 1
   beforeChangelogVersion: 1

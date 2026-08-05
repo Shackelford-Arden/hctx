@@ -1,0 +1,6 @@
+[tools]
+changie = "latest"
+go = "1.26.5"
+golangci-lint = "latest"
+goreleaser = "latest"
+task = "latest"
