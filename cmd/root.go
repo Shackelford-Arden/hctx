@@ -72,7 +72,12 @@ func ValidateConfig(ctx *cli.Context) error {
 
 	AppConfig = cfg
 	AppCache = cacheItem
-	ActiveShell = shells.DiscoverShell()
+
+	shellName := ctx.String("shell")
+	if shellName == "" {
+		shellName = cfg.Shell
+	}
+	ActiveShell = shells.FromName(shellName)
 
 	return nil
 }
