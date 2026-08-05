@@ -1,0 +1,5 @@
+kind: Fixed
+body: Bug keeping stack tokens from properly being cached when switching stacks (or unsetting)
+time: 2026-08-05T09:25:02.342012945-05:00
+custom:
+    Author: Shackelford-Arden

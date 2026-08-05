@@ -14,7 +14,7 @@ func GetCacheableValues() models.StackCache {
 	}
 
 	ct := os.Getenv(models.ConsulToken)
-	if nt != "" {
+	if ct != "" {
 		currentValues.ConsulToken = ct
 	}
 
