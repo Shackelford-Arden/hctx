@@ -9,9 +9,21 @@ For contributing, please see out [contributing docs](./CONTRIBUTING.md).
 
 ### Installation
 
-Download the latest [release](https://github.com/Shackelford-Arden/hctx/releases/latest) for your OS.
+#### mise (recommended)
 
-Place it wherever you'd like, so long as it is in your $PATH (or equivalent for your shell).
+If you have [mise](https://mise.jdx.dev) installed, you can install `hctx` like this:
+
+```shell
+mise use -g "github:Shackelford-Arden/hctx@latest"
+```
+
+#### go install
+
+If you have Go installed, you can install `hctx` like this:
+
+```shell
+go install github.com/Shackelford-Arden/hctx@latest
+```
 
 #### dist
 
@@ -20,6 +32,12 @@ If you have [dist](https://github.com/ekristen/distillery) installed, you can in
 ```shell
 dist install github/Shackelford-Arden/hctx
 ```
+
+#### Manual
+
+Download the latest [release](https://github.com/Shackelford-Arden/hctx/releases/latest) for your OS.
+
+Place it wherever you'd like, so long as it is in your $PATH (or equivalent for your shell).
 
 ### Configure Shell
 
