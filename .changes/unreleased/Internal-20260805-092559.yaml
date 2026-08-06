@@ -1,5 +1,0 @@
-kind: Internal
-body: Moving to golangci-lint for linting and `mise` for tooling
-time: 2026-08-05T09:25:59.875282462-05:00
-custom:
-    Author: Shackelford-Arden
